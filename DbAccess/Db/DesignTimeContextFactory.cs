@@ -9,6 +9,15 @@ using Microsoft.Extensions.Configuration;
 
 namespace Exico.HF.DbAccess.Db
 {
+
+    public class ExicoHfDbFactory : DesignTimeDbContextFactoryBase<ExicoHfDbContext>
+    {
+        public override ExicoHfDbContext CreateDbContext(string[] args)
+        {
+            return new ExicoHfDbContext(GetDbContextOptions());
+        }
+    }
+
     public abstract class DesignTimeDbContextFactoryBase<TContext> : IDesignTimeDbContextFactory<TContext> where TContext : DbContext
     {
         public abstract TContext CreateDbContext(string[] args);
@@ -30,7 +39,7 @@ namespace Exico.HF.DbAccess.Db
                 .AddJsonFile($"appsettings.{GetEnvironmentName()}.json", true)
                 .AddEnvironmentVariables();
             var config = builder.Build();
-            var connstr = config.GetConnectionString(GetConnectionStringName());
+            var connstr = config.GetConnectionString(config["ExicoHfDbConName"]);
             if (string.IsNullOrWhiteSpace(connstr))
             {
                 throw new InvalidOperationException($"Could not find a connection string named '{GetConnectionStringName()}'.");

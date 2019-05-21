@@ -5,8 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Exico.HF.DbAccess.Db
 {
-
-
     public class ExicoHfDbContext : DbContext
     {
         public ExicoHfDbContext(DbContextOptions<ExicoHfDbContext> options) : base(options)
@@ -17,8 +15,4 @@ namespace Exico.HF.DbAccess.Db
 
         }
     }
-
-
 }
-
-
