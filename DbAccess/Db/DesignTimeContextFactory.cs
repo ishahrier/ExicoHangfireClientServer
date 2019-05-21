@@ -39,10 +39,10 @@ namespace Exico.HF.DbAccess.Db
                 .AddJsonFile($"appsettings.{GetEnvironmentName()}.json", true)
                 .AddEnvironmentVariables();
             var config = builder.Build();
-            var connstr = config.GetConnectionString(config["ExicoHfDbConName"]);
+            var connstr = config.GetConnectionString("Default");
             if (string.IsNullOrWhiteSpace(connstr))
             {
-                throw new InvalidOperationException($"Could not find a connection string named '{GetConnectionStringName()}'.");
+                throw new InvalidOperationException($"Could not find a connection string named Default.");
             }
             return connstr;
         }
@@ -65,10 +65,6 @@ namespace Exico.HF.DbAccess.Db
         protected virtual DbContextOptionsBuilder<TContext> ConfigureOptionBuilder(DbContextOptionsBuilder<TContext> optionBuilder)
         {
             return optionBuilder;
-        }
-        protected virtual string GetConnectionStringName()
-        {
-            return "HangFire";
         }
     }
 }
