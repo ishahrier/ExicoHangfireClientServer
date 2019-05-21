@@ -8,7 +8,7 @@ namespace Exico.HF.Common.Bases
 {
     public abstract class ABaseTask : IBaseTask
     {
-        public ABaseTask(IBaseTaskOptions options)
+        protected ABaseTask(IBaseTaskOptions options)
         {
             this._Options = options;
         }

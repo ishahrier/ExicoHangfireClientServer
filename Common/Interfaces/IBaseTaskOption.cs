@@ -23,8 +23,6 @@ namespace Exico.HF.Common.Interfaces {
         bool HasOption (string key);
         Dictionary<string, object> BuildObjectDictionary ();
         void InitializeFromDictionary (Dictionary<string, object> options);
-
-        void PrintOptions ();
         string ToJson ();
     }
 }
