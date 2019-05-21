@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 
-namespace Exico.Hf.DbAccess.Db
+namespace Exico.HF.DbAccess.Db
 {
 
 

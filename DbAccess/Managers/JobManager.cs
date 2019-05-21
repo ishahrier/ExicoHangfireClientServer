@@ -1,7 +1,7 @@
 ﻿using Exico.HF.Common.Interfaces;
 using Hangfire;
 
-namespace Exico.Hf.DbAccess.Managers
+namespace Exico.HF.DbAccess.Managers
 {
     public class JobManager
     {
