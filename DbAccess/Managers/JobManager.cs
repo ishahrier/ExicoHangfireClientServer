@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Exico.HF.Common.Interfaces;
+﻿using Exico.HF.Common.Interfaces;
 using Hangfire;
 
-namespace Exico.HF.Common.Managers
+namespace Exico.Hf.DbAccess.Managers
 {
     public class JobManager
     {
