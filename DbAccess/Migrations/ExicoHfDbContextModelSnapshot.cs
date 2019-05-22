@@ -21,12 +21,18 @@ namespace Exico.HF.DbAccess.Migrations
 
             modelBuilder.Entity("Exico.HF.DbAccess.Db.Models.HfUserJob", b =>
                 {
-                    b.Property<string>("Id");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTimeOffset>("CreatedOn");
 
-                    b.Property<string>("HfJobId")
+                    b.Property<string>("HfJobId");
+
+                    b.Property<string>("JobType")
                         .IsRequired();
+
+                    b.Property<string>("JsonOption");
 
                     b.Property<string>("Name")
                         .IsRequired();

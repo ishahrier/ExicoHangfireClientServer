@@ -15,7 +15,6 @@ namespace Exico.HF.DbAccess.Managers
 
         private JobManager()
         {
-
         }
 
         public JobManager(ExicoHfDbContext ctx, IBackgroundJobClient hfBgClient)
@@ -35,6 +34,7 @@ namespace Exico.HF.DbAccess.Managers
                 Name = name,
                 Note = note,
                 UserId = options.UserId,
+                JobType = JobType.FireAndForget
             };
             _ctx.HfUserJob.Add(userJob);
             var userJobId = await _ctx.SaveChangesAsync();
@@ -65,6 +65,7 @@ namespace Exico.HF.DbAccess.Managers
                 Name = name,
                 Note = note,
                 UserId = options.UserId,
+                JobType = JobType.Scheduled
             };
             _ctx.HfUserJob.Add(userJob);
             var userJobId = await _ctx.SaveChangesAsync();

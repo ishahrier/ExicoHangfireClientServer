@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Exico.HF.Common.Extentions;
+using Exico.HF.Common.Interfaces;
+using Exico.HF.DbAccess.Extentions;
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Builder;
@@ -25,7 +28,6 @@ namespace HFServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddHangfire(configuration => configuration
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_110)
                 .UseSimpleAssemblyNameTypeSerializer()
@@ -40,13 +42,16 @@ namespace HFServer
                     DisableGlobalLocks = true
                 }));
             services.AddHangfireServer();
+            services.AddExicoHfExtension();
+            services.AddExicoHfDbServices(Configuration.GetConnectionString("HangfireConnection"));
+            services.AddScoped<IFireAndForgetTask, MyFnFJob>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.CheckConsentNeeded = context => true;
             });
-            services.AddControllersWithViews()
-                .AddNewtonsoftJson();
+
+            services.AddControllersWithViews().AddNewtonsoftJson();
             services.AddRazorPages();
         }
         

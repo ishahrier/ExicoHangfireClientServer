@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Exico.HF.DbAccess.Migrations
 {
     [DbContext(typeof(ExicoHfDbContext))]
-    [Migration("20190522013703_initial")]
+    [Migration("20190522202359_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,12 +23,18 @@ namespace Exico.HF.DbAccess.Migrations
 
             modelBuilder.Entity("Exico.HF.DbAccess.Db.Models.HfUserJob", b =>
                 {
-                    b.Property<string>("Id");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTimeOffset>("CreatedOn");
 
-                    b.Property<string>("HfJobId")
+                    b.Property<string>("HfJobId");
+
+                    b.Property<string>("JobType")
                         .IsRequired();
+
+                    b.Property<string>("JsonOption");
 
                     b.Property<string>("Name")
                         .IsRequired();
