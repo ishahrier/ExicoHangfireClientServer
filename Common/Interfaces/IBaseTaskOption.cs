@@ -24,5 +24,6 @@ namespace Exico.HF.Common.Interfaces {
         Dictionary<string, object> BuildObjectDictionary ();
         void InitializeFromDictionary (Dictionary<string, object> options);
         string ToJson ();
+        bool Validate();
     }
 }

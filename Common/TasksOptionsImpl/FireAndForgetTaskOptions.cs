@@ -8,5 +8,11 @@ namespace Exico.HF.Common.TasksOptionsImpl {
         {
             JobType = Interfaces.JobType.FireAndForget;
         }
+
+        //todo do actuall validation
+        public override bool Validate()
+        {
+            return true;
+        }
     }
 }

@@ -62,5 +62,7 @@ namespace Exico.HF.Common.Bases
             var setting = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented };
             return JsonConvert.SerializeObject(this._Options, setting);
         }
+
+        public abstract bool Validate();
     }
 }

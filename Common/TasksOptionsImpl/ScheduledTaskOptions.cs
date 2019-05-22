@@ -7,9 +7,15 @@ namespace Exico.HF.Common.TasksOptionsImpl {
 
         public ScheduledTaskOptions():base() => JobType = Interfaces.JobType.Scheduled;
 
-        public TimeSpan ScheduledAt {
-            get => GetOption<TimeSpan>("ScheduledAt");
+        public DateTime ScheduledAt {
+            get => GetOption<DateTime>("ScheduledAt");
             set => SetOption("ScheduledAt", value);
+        }
+
+        //todo do catual validation
+        public override bool Validate()
+        {
+            return true;
         }
     }
 }
