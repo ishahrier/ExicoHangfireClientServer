@@ -73,7 +73,10 @@ namespace Exico.HF.DbAccess.Managers
             options.UserTaskId = userJobId;
 
             //create hangfire job and get hangfire job id
-            var hfJobId = _hfBgClient.Schedule<IFireAndForgetTask>(x => x.Run(options.ToJson(), JobCancellationToken.Null),TimeZoneInfo.ConvertTime(options.ScheduledAt,options.TimeZone ));
+            var hfJobId = _hfBgClient.Schedule<IFireAndForgetTask>(x => x.Run(options.ToJson(),
+                    JobCancellationToken.Null),
+                    TimeZoneInfo.ConvertTimeToUtc(options.ScheduledAt,
+                    TimeZoneInfo.FindSystemTimeZoneById(options.TimeZoneId)));
 
             //update db
             userJob.HfJobId = hfJobId;

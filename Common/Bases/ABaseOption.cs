@@ -21,10 +21,10 @@ namespace Exico.HF.Common.Bases
             get => GetOption<string>("UserId");
             set => SetOption("UserId", value);
         }
-        public TimeZoneInfo TimeZone
+        public string TimeZoneId 
         {
-            get => GetOption<TimeZoneInfo>("TimeZoneInfo");
-            set => SetOption("TimeZoneInfo", value);
+            get => GetOption<string>("TimeZoneId");
+            set => SetOption("TimeZoneId", value);
         }
         public long UserTaskId
         {

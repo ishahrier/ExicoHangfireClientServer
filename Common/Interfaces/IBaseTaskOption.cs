@@ -14,7 +14,7 @@ namespace Exico.HF.Common.Interfaces {
     public interface IBaseTaskOptions {
         string HfJobId { get; set; }
         string UserId { get; set; }
-        TimeZoneInfo TimeZone { get; set; }
+        string TimeZoneId { get; set; }
         long UserTaskId { get; set; }
         string JobType { get;  }
         string RunType { get;  }
