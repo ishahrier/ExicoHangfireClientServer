@@ -45,6 +45,7 @@ namespace HFServer
             services.AddExicoHfExtension();
             services.AddExicoHfDbServices(Configuration.GetConnectionString("HangfireConnection"));
             services.AddScoped<IFireAndForgetTask, MyFnFJob>();
+            services.AddScoped<IScheduledTask, MyScheduledJob>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {

@@ -41,7 +41,31 @@ namespace HFServer
         protected override async Task Run(IJobCancellationToken cancellationToken, IBaseTaskOptions options)
         {
             var myOptions = (IFireAndForgetTaskOptions)options;
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("This is a fire and forget task");
             Console.WriteLine("User id is : " + myOptions.GetUserId());
+            Console.ResetColor();
+        }
+    }
+
+    public class MyScheduledJob : ABaseScheduledtTask
+    {
+        public MyScheduledJob(IScheduledTaskOptions options) : base(options)
+        {
+        }
+
+        public override void UpdateTaskStatus()
+        {
+
+        }
+
+        protected override async Task Run(IJobCancellationToken cancellationToken, IBaseTaskOptions options)
+        {
+            var myOptions = (IScheduledTaskOptions)options;
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("This is a scheudled task");
+            Console.WriteLine("User id is : " + myOptions.GetUserId());
+            Console.ResetColor();
         }
     }
 }

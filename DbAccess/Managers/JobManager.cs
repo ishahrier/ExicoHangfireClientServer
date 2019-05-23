@@ -45,7 +45,7 @@ namespace Exico.HF.DbAccess.Managers
             //update options
             options.SetUserTaskId(userJob.Id);
             //create hangfire job and get hangfire job id            
-            var hfJobId = _hfBgClient.Schedule<IFireAndForgetTask>(x => x.Run(options.ToJson(),
+            var hfJobId = _hfBgClient.Schedule<IScheduledTask>(x => x.Run(options.ToJson(),
                     JobCancellationToken.Null),
                     TimeZoneInfo.ConvertTimeToUtc(options.GetScheduledAt(),
                     TimeZoneInfo.FindSystemTimeZoneById(options.GetTimeZoneId())));

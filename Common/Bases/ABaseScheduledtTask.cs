@@ -2,7 +2,7 @@
 
 namespace Exico.HF.Common.Bases
 {
-    public abstract class ABaseScheduledtTask : ABaseTask
+    public abstract class ABaseScheduledtTask : ABaseTask,IScheduledTask
     {
         protected ABaseScheduledtTask(IScheduledTaskOptions options):base(options)
         {
