@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Exico.HF.Common.TasksOptionsImpl;
 using Exico.HF.DbAccess.Managers;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using HFServer.Models;
 
@@ -38,8 +39,8 @@ namespace HFServer.Controllers
 
             var options = new RecurringTaskOptions();
             options.SetTimeZoneId("Central Standard Time");
-            options.SetCronExpression("* * * * * *");
-            options.SetUserId("3000");
+            options.SetCronExpression(Cron.Minutely());
+            options.SetUserId("4000");
             _jm.Create(options, "The name", "the note");
 
             return View();
