@@ -32,9 +32,9 @@ namespace Exico.HF.Common.Bases
 
         public Dictionary<string, object> BuildObjectDictionary() => _Options;
 
-        public T GetOption<T>(string key) => _Options.ContainsKey(key.ToLower()) ? (T)(_Options[key.ToLower()]) : default(T);
+        public T GetOption<T>(string key) => _Options.ContainsKey(key) ? (T)_Options[key] : default(T);
 
-        public bool HasOption(string key) => _Options.ContainsKey(key.ToLower());
+        public bool HasOption(string key) => _Options.ContainsKey(key);
 
         public void InitializeFromDictionary(Dictionary<string, object> options) => this._Options = options;
 

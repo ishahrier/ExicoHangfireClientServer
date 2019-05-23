@@ -41,7 +41,7 @@ namespace HFServer
         protected override async Task Run(IJobCancellationToken cancellationToken)
         {
             var myOptions = (IFireAndForgetTaskOptions)_Options;
-            Console.WriteLine(myOptions.GetUserId());
+            Console.WriteLine("User id is : " + myOptions.GetUserId());
         }
     }
 }
