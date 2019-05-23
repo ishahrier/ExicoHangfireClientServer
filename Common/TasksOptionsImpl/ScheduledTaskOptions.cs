@@ -4,7 +4,7 @@ using Exico.HF.Common.Interfaces;
 
 namespace Exico.HF.Common.TasksOptionsImpl
 {
-    public class ScheduledTaskOptions : ABaseOptions, IScheduledTaskOptions
+    public class ScheduledTaskOptions : ABaseTaskOptions, IScheduledTaskOptions
     {
 
         public ScheduledTaskOptions() : base() => SetJobType(JobType.Scheduled);

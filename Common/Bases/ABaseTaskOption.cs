@@ -6,9 +6,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Exico.HF.Common.Bases
 {
-    public abstract class ABaseOptions : IBaseTaskOptions
+    public abstract class ABaseTaskOptions : IBaseTaskOptions
     {
-        protected ABaseOptions()
+        protected ABaseTaskOptions()
         {
             _Options = new Dictionary<string, object>();
             SetRunType( Interfaces.RunType.ASync);
