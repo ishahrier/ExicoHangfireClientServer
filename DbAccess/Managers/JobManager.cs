@@ -67,7 +67,8 @@ namespace Exico.HF.DbAccess.Managers
             _hfRecClient.AddOrUpdate(hfJobId,
                 Job.FromExpression<IRecurringTask>((x) => x.Run(options.ToJson(),
                 JobCancellationToken.Null)),
-                options.GetCronExpression());
+                options.GetCronExpression(),
+                TimeZoneInfo.FindSystemTimeZoneById(options.GetTimeZoneId()));
 
             return await _UpdateHfUserJob(options, userJob.Id, hfJobId);
         }
