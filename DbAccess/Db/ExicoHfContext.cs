@@ -12,7 +12,9 @@ namespace Exico.HF.DbAccess.Db
         public DbSet<HfUserJob> HfUserJob { get; set; }
         public ExicoHfDbContext(DbContextOptions<ExicoHfDbContext> options) : base(options)
         {
+            
         }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
         }
