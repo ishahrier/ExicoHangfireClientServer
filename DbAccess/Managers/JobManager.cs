@@ -5,8 +5,10 @@ using Hangfire;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Hangfire.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace Exico.HF.DbAccess.Managers
 {
@@ -71,6 +73,34 @@ namespace Exico.HF.DbAccess.Managers
                 TimeZoneInfo.FindSystemTimeZoneById(options.GetTimeZoneId()));
 
             return await _UpdateHfUserJob(options, userJob.Id, hfJobId);
+        }
+
+        public async  Task<bool> DeleteJob(long userJobId)
+        {
+            var userJob = await _ctx.HfUserJob.Where(x => x.Id == userJobId).FirstOrDefaultAsync();
+            if (userJob != null && userJob.Id == userJobId)
+            {
+                var hfId = userJob.HfJobId;
+                switch (userJob.JobType)
+                {
+                    case JobType.FireAndForget:
+                    case JobType.Scheduled:
+                        _hfBgClient.Delete(hfId);
+                        break;
+                    case JobType.Recurring:
+                        _hfRecClient.RemoveIfExists(hfId);
+                        break;
+                    default:
+                        throw new Exception("Invalid job type detected");
+                        
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            
         }
 
         private async Task<HfUserJob> _CreateHfUserJob(IBaseTaskOptions options, string name, string note)
