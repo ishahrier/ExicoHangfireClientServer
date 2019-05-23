@@ -15,11 +15,12 @@ namespace Exico.HF.Common.Bases
         protected IBaseTaskOptions _Options { get; set; }
         public virtual async Task Run(string jsonOptions, IJobCancellationToken cancellationToken)
         {
-            await Task.Run(() => InitiaLizeOption(jsonOptions));
+            InitiaLizeOption(jsonOptions);
+            await Run(cancellationToken);
         }
 
         public abstract void UpdateTaskStatus();
-
+        protected abstract Task Run(IJobCancellationToken cancellationToken);
         protected void InitiaLizeOption(string jsonOptoins)
         {
             var setting = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };

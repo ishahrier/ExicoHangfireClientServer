@@ -11,41 +11,24 @@ namespace Exico.HF.Common.Bases
         protected ABaseOptions()
         {
             _Options = new Dictionary<string, object>();
-            RunType = Interfaces.RunType.ASync;
+            SetRunType( Interfaces.RunType.ASync);
         }
 
         public Dictionary<string, object> _Options;
 
-        public string UserId
-        {
-            get => GetOption<string>("UserId");
-            set => SetOption("UserId", value);
-        }
-        public string TimeZoneId 
-        {
-            get => GetOption<string>("TimeZoneId");
-            set => SetOption("TimeZoneId", value);
-        }
-        public long UserTaskId
-        {
-            get => GetOption<long>("UserTaskId");
-            set => SetOption("UserTaskId", value);
-        }
-        public string JobType
-        {
-            get => GetOption<string>("JobType");
-            protected set => SetOption("JobType", value);
-        }
-        public string RunType
-        {
-            get => GetOption<string>("RunType");
-            protected set => SetOption("RunType", value);
-        }
-        public string HfJobId
-        {
-            get => GetOption<string>("HfJobId");
-            set => SetOption("HfJobId", value);
-        }
+        public string GetUserId() => GetOption<string>("UserId");
+        public string GetTimeZoneId() => GetOption<string>("TimeZoneId");
+        public long GetUserTaskId() => GetOption<long>("UserTaskId");
+        public string GetJobType() => GetOption<string>("JobType");
+        public string GetRunType() => GetOption<string>("RunType");
+        public string GetHfJobId() => GetOption<string>("HfJobId");
+
+        public void SetHfJobId(string id) => SetOption("HfJobId", id);
+        public void SetUserId(string id) => SetOption("UserId", id);
+        public void SetTimeZoneId(string id) => SetOption("TimeZoneId", id);
+        public void SetUserTaskId(long id) => SetOption("UserTaskId", id);
+        public void SetJobType(string type) => SetOption("JobType", type);
+        public void SetRunType(string type) => SetOption("RunType", type);
 
         public Dictionary<string, object> BuildObjectDictionary() => _Options;
 
@@ -64,5 +47,6 @@ namespace Exico.HF.Common.Bases
         }
 
         public abstract bool Validate();
+
     }
 }

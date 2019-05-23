@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Exico.HF.Common.Bases;
 using Exico.HF.Common.Interfaces;
+using Hangfire;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -34,8 +35,13 @@ namespace HFServer
 
         public override void UpdateTaskStatus()
         {
-            Console.WriteLine("Running MyFnFJob");
-            Console.WriteLine("UserId"+_Options.UserId);
+
+        }
+
+        protected override async Task Run(IJobCancellationToken cancellationToken)
+        {
+            var myOptions = (IFireAndForgetTaskOptions)_Options;
+            Console.WriteLine(myOptions.GetUserId());
         }
     }
 }

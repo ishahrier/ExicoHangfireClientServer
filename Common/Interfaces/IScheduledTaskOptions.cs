@@ -1,9 +1,8 @@
 using System;
 
 namespace Exico.HF.Common.Interfaces {
-    public interface IScheduledTaskOptions : IBaseTaskOptions {
-
-        DateTime ScheduledAt { get; set; }//Must be unspecified Kind
-        
+    public interface IScheduledTaskOptions : IBaseTaskOptions {        
+        DateTime GetScheduledAt();
+        void SetScheduledAt(DateTime dt);
     }
 }

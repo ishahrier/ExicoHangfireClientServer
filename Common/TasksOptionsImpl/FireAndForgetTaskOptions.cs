@@ -4,10 +4,7 @@ using Exico.HF.Common.Interfaces;
 namespace Exico.HF.Common.TasksOptionsImpl {
     public class FireAndForgetTaskOptions : ABaseOptions, IFireAndForgetTaskOptions {
 
-        public FireAndForgetTaskOptions():base()
-        {
-            JobType = Interfaces.JobType.FireAndForget;
-        }
+        public FireAndForgetTaskOptions() : base() => SetJobType(JobType.FireAndForget);
 
         //todo do actuall validation
         public override bool Validate()

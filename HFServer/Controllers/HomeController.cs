@@ -25,13 +25,11 @@ namespace HFServer.Controllers
 
         public IActionResult Privacy()
         {
-            var options = new FireAndForgetTaskOptions()
-            {
-                UserId = "1234567",
-                TimeZoneId = "abra ka debra"
-            };
-            
-            _jm.Create(options,"The name","the note");
+            var options = new FireAndForgetTaskOptions();
+            options.SetTimeZoneId("Central Standard Time");
+            options.SetUserId("1000");
+
+            _jm.Create(options, "The name", "the note");
             return View();
         }
 

@@ -33,14 +33,14 @@ namespace Exico.HF.DbAccess.Managers
                 CreatedOn = DateTimeOffset.UtcNow,
                 Name = name,
                 Note = note,
-                UserId = options.UserId,
-                JobType = JobType.FireAndForget
+                UserId = options.GetUserId(),
+                JobType = options.GetJobType()
             };
             _ctx.HfUserJob.Add(userJob);
             var userJobId = await _ctx.SaveChangesAsync();
 
             //update options
-            options.UserTaskId = userJobId;
+            options.SetUserTaskId( userJobId);
 
             //create hangfire job and get hangfire job id
             var hfJobId = _hfBgClient.Enqueue<IFireAndForgetTask>(x => x.Run(options.ToJson(), JobCancellationToken.Null));
@@ -64,20 +64,20 @@ namespace Exico.HF.DbAccess.Managers
                 CreatedOn = DateTimeOffset.UtcNow,
                 Name = name,
                 Note = note,
-                UserId = options.UserId,
-                JobType = JobType.Scheduled
+                UserId = options.GetUserId(),
+                JobType = options.GetJobType()
             };
             _ctx.HfUserJob.Add(userJob);
             var userJobId = await _ctx.SaveChangesAsync();
 
             //update options
-            options.UserTaskId = userJobId;
+            options.SetUserTaskId( userJobId);
 
             //create hangfire job and get hangfire job id
             var hfJobId = _hfBgClient.Schedule<IFireAndForgetTask>(x => x.Run(options.ToJson(),
                     JobCancellationToken.Null),
-                    TimeZoneInfo.ConvertTimeToUtc(options.ScheduledAt,
-                    TimeZoneInfo.FindSystemTimeZoneById(options.TimeZoneId)));
+                    TimeZoneInfo.ConvertTimeToUtc(options.GetScheduledAt(),
+                    TimeZoneInfo.FindSystemTimeZoneById(options.GetTimeZoneId())));
 
             //update db
             userJob.HfJobId = hfJobId;
