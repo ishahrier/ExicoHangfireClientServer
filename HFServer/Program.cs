@@ -68,4 +68,24 @@ namespace HFServer
             Console.ResetColor();
         }
     }
+    public class MyRecurringJob : ABaseRecurringTask
+    {
+        public MyRecurringJob(IRecurringTaskOptions options) : base(options)
+        {
+        }
+
+        public override void UpdateTaskStatus()
+        {
+
+        }
+
+        protected override async Task Run(IJobCancellationToken cancellationToken, IBaseTaskOptions options)
+        {
+            var myOptions = (IRecurringTaskOptions)options;
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("This is a Recurring task");
+            Console.WriteLine("User id is : " + myOptions.GetUserId());
+            Console.ResetColor();
+        }
+    }
 }

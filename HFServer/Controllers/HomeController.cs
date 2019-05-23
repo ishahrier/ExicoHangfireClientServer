@@ -30,10 +30,16 @@ namespace HFServer.Controllers
             //options.SetUserId("1000");
             //_jm.Create(options, "The name", "the note");
 
-            var options = new ScheduledTaskOptions();
+            //var options = new ScheduledTaskOptions();
+            //options.SetTimeZoneId("Central Standard Time");
+            //options.SetScheduledAt(new DateTime(2019, 5, 23, 9, 17, 00, DateTimeKind.Unspecified));
+            //options.SetUserId("2000");
+            //_jm.Create(options, "The name", "the note");
+
+            var options = new RecurringTaskOptions();
             options.SetTimeZoneId("Central Standard Time");
-            options.SetScheduledAt(new DateTime(2019, 5, 23, 9, 17, 00, DateTimeKind.Unspecified));
-            options.SetUserId("1000");
+            options.SetCronExpression("* * * * * *");
+            options.SetUserId("3000");
             _jm.Create(options, "The name", "the note");
 
             return View();

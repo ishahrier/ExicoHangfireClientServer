@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire.Common;
 
 namespace Exico.HF.DbAccess.Managers
 {
@@ -13,21 +14,23 @@ namespace Exico.HF.DbAccess.Managers
     {
         private readonly ExicoHfDbContext _ctx;
         private readonly IBackgroundJobClient _hfBgClient;
+        private readonly IRecurringJobManager _hfRecClient;
         private readonly ILogger<IJobManager> _logger;
 
         private JobManager()
         {
         }
 
-        public JobManager(ExicoHfDbContext ctx, IBackgroundJobClient hfBgClient,ILogger<IJobManager> logger)
+        public JobManager(ExicoHfDbContext ctx, IBackgroundJobClient hfBgClient, IRecurringJobManager hfRecClient, ILogger<IJobManager> logger)
         {
             _ctx = ctx;
             _hfBgClient = hfBgClient;
+            _hfRecClient = hfRecClient;
             _logger = logger;
         }
 
         public async Task<HfUserJob> Create(IFireAndForgetTaskOptions options, string name, string note)
-        {           
+        {
             //create db record to get the db ID
             var userJob = await _CreateHfUserJob(options, name, note);
             //update options
@@ -50,7 +53,23 @@ namespace Exico.HF.DbAccess.Managers
                     TimeZoneInfo.ConvertTimeToUtc(options.GetScheduledAt(),
                     TimeZoneInfo.FindSystemTimeZoneById(options.GetTimeZoneId())));
 
-            return await _UpdateHfUserJob(options,  userJob.Id, hfJobId);
+            return await _UpdateHfUserJob(options, userJob.Id, hfJobId);
+        }
+
+        public async Task<HfUserJob> Create(IRecurringTaskOptions options, string name, string note)
+        {
+            //create db record to get the db ID
+            var userJob = await _CreateHfUserJob(options, name, note);
+            //update options
+            options.SetUserTaskId(userJob.Id);
+            //create hangfire job and get hangfire job id            
+            var hfJobId = Guid.NewGuid().ToString();
+            _hfRecClient.AddOrUpdate(hfJobId,
+                Job.FromExpression<IRecurringTask>((x) => x.Run(options.ToJson(),
+                JobCancellationToken.Null)),
+                options.GetCronExpression());
+
+            return await _UpdateHfUserJob(options, userJob.Id, hfJobId);
         }
 
         private async Task<HfUserJob> _CreateHfUserJob(IBaseTaskOptions options, string name, string note)
@@ -68,13 +87,14 @@ namespace Exico.HF.DbAccess.Managers
             };
 
             await _ctx.HfUserJob.AddAsync(userJob);
-             _ctx.SaveChangesAsync().Wait();
+            _ctx.SaveChangesAsync().Wait();
 
-             //return newly created job
+            //return newly created job
             return userJob;
         }
 
-        private async Task<HfUserJob> _UpdateHfUserJob(IBaseTaskOptions options,long userJobId,string hfJobId)
+
+        private async Task<HfUserJob> _UpdateHfUserJob(IBaseTaskOptions options, long userJobId, string hfJobId)
         {
             var toBeUpdated = _ctx.HfUserJob.FirstOrDefault(x => x.Id == userJobId);
             //update db
@@ -87,6 +107,5 @@ namespace Exico.HF.DbAccess.Managers
             //return updated job
             return toBeUpdated;
         }
-        
     }
 }

@@ -8,6 +8,8 @@ namespace Exico.HF.Common.TasksOptionsImpl
 {
     public class RecurringTaskOptions:ABaseTaskOptions, IRecurringTaskOptions
     {
+        public RecurringTaskOptions() : base() => SetJobType(JobType.Recurring);
+
         public void SetCronExpression(string expression) => SetOption("Cron", expression);
         public string GetCronExpression() => GetOption<string>("Cron");
         public override bool Validate()
