@@ -24,32 +24,48 @@ namespace HFServer.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Privacy()
+        public async Task<IActionResult> CreateFnF()
         {
             var options2= new FireAndForgetTaskOptions();
             options2.SetTimeZoneId("Central Standard Time");
             options2.SetUserId("1000");
-            await _jm.Create(options2, "The name", "the note");
+            await _jm.Create(options2, "Fnf", "Fnf note");
+            return Ok("Fire and forget task created");
+        }
+        >
+        public async Task<ActionResult> CreateScheduled(int minAfter=1)
+        {
 
-            //var options = new ScheduledTaskOptions();
-            //options.SetTimeZoneId("Central Standard Time");
-            //options.SetScheduledAt(new DateTime(2019, 5, 23, 9, 17, 00, DateTimeKind.Unspecified));
-            //options.SetUserId("2000");
-            //_jm.Create(options, "The name", "the note");
+            var options = new ScheduledTaskOptions();
+            options.SetTimeZoneId("Central Standard Time");
+            var now = DateTime.Now.AddSeconds(minAfter*60);
+            options.SetScheduledAt(new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, DateTimeKind.Unspecified));
+            options.SetUserId("2000");
+            await _jm.Create(options, "Scheduled", "Scheduled note");
+            return Ok("Scheduled task created");
 
+        }
+
+        public async Task<ActionResult> CreateRecurring()
+        {
             var options = new RecurringTaskOptions();
             options.SetTimeZoneId("Central Standard Time");
             options.SetCronExpression(Cron.Minutely());
             options.SetUserId("4000");
-            await _jm.Create(options, "The name", "the note");
-
-            return View();
+            await _jm.Create(options, "Recurring", "Recurring note");
+            return Ok("Recurring task created");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public ActionResult Cancel(int id)
+        {
+            var result = _jm.Cancel(id).Result;
+            return  Ok();
         }
     }
 }
