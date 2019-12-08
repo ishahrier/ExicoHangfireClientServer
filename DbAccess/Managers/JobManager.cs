@@ -19,7 +19,7 @@ namespace Exico.HF.DbAccess.Managers
         private readonly IRecurringJobManager RecClient;
         private readonly ILogger<IJobManager> Logger;
 
-        public ExicoHfDbContext Ctx1 => Ctx;
+ 
 
         private JobManager()
         {
