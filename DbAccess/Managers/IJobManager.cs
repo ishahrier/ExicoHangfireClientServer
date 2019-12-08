@@ -14,5 +14,7 @@ namespace Exico.HF.DbAccess.Managers
         Task<HfUserJob> Create(IFireAndForgetTaskOptions options, string name, string note);
         Task<HfUserJob> Create(IScheduledTaskOptions options, string name, string note);
         Task<HfUserJob> Create(IRecurringTaskOptions options, string name, string note);
+
+        Task<bool> Cancel(int hfJobId);
     }
 }

@@ -24,12 +24,12 @@ namespace HFServer.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public async Task<IActionResult> Privacy()
         {
-            //var options = new FireAndForgetTaskOptions();
-            //options.SetTimeZoneId("Central Standard Time");
-            //options.SetUserId("1000");
-            //_jm.Create(options, "The name", "the note");
+            var options2= new FireAndForgetTaskOptions();
+            options2.SetTimeZoneId("Central Standard Time");
+            options2.SetUserId("1000");
+            await _jm.Create(options2, "The name", "the note");
 
             //var options = new ScheduledTaskOptions();
             //options.SetTimeZoneId("Central Standard Time");
@@ -41,7 +41,7 @@ namespace HFServer.Controllers
             options.SetTimeZoneId("Central Standard Time");
             options.SetCronExpression(Cron.Minutely());
             options.SetUserId("4000");
-            _jm.Create(options, "The name", "the note");
+            await _jm.Create(options, "The name", "the note");
 
             return View();
         }
