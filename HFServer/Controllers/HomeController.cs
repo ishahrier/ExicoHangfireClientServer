@@ -30,9 +30,9 @@ namespace HFServer.Controllers
             options2.SetTimeZoneId("Central Standard Time");
             options2.SetUserId("1000");
             await _jm.Create(options2, "Fnf", "Fnf note");
-            return Ok("Fire and forget task created");
+            return View("Index");
         }
-        >
+        
         public async Task<ActionResult> CreateScheduled(int minAfter=1)
         {
 
@@ -42,7 +42,7 @@ namespace HFServer.Controllers
             options.SetScheduledAt(new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, DateTimeKind.Unspecified));
             options.SetUserId("2000");
             await _jm.Create(options, "Scheduled", "Scheduled note");
-            return Ok("Scheduled task created");
+            return View("Index");
 
         }
 
@@ -53,7 +53,7 @@ namespace HFServer.Controllers
             options.SetCronExpression(Cron.Minutely());
             options.SetUserId("4000");
             await _jm.Create(options, "Recurring", "Recurring note");
-            return Ok("Recurring task created");
+            return View("Index");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -65,7 +65,7 @@ namespace HFServer.Controllers
         public ActionResult Cancel(int id)
         {
             var result = _jm.Cancel(id).Result;
-            return  Ok();
+            return View("Index");
         }
     }
 }

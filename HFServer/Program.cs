@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Exico.HF.Common.Bases;
 using Exico.HF.Common.Interfaces;
@@ -42,9 +43,27 @@ namespace HFServer
         {
             var myOptions = (IFireAndForgetTaskOptions)options;
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("This is a fire and forget task");
-            Console.WriteLine("User id is : " + myOptions.GetUserId());
+            
             Console.ResetColor();
+            bool cancelled = false;
+            for(int i = 1; i <= 10 && !cancelled; i++)
+            {
+                Console.WriteLine($"User side task id : {options.GetUserTaskId()} | User id: {options.GetUserId()} ");
+                Thread.Sleep(2000);
+                try
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                }
+                catch(OperationCanceledException ex)
+                {
+                    Console.WriteLine($"Cancellation requested for job id {options.GetUserTaskId()}. quiting job...");
+                    cancelled = true;
+                }               
+                
+            }
+            if(!cancelled)
+                Console.WriteLine("Job ended normally."); 
         }
     }
 
