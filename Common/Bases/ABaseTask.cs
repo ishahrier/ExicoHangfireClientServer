@@ -22,7 +22,14 @@ namespace Exico.HF.Common.Bases
         public virtual async Task Run(string jsonOptions, IJobCancellationToken cancellationToken)
         {
             InitiaLizeOption(jsonOptions);
-            await Run(cancellationToken, _Options);
+            if (this._Options.Validate())
+            {
+                await Run(cancellationToken, _Options);
+            }
+            else
+            {
+                throw new System.ArgumentException("Invalid 'HF Task' options detected");
+            }
         }
 
 
