@@ -102,9 +102,27 @@ namespace HFServer
         {
             var myOptions = (IRecurringTaskOptions)options;
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("This is a Recurring task");
-            Console.WriteLine("User id is : " + myOptions.GetUserId());
+
             Console.ResetColor();
+            bool cancelled = false;
+            for (int i = 1; i <= 10 && !cancelled; i++)
+            {
+                Console.WriteLine($"User side task id : {options.GetUserTaskId()} | User id: {options.GetUserId()} ");
+                Thread.Sleep(2000);
+                try
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                }
+                catch (OperationCanceledException ex)
+                {
+                    Console.WriteLine($"Cancellation requested for job id {options.GetUserTaskId()}. quiting job...");
+                    cancelled = true;
+                }
+
+            }
+            if (!cancelled)
+                Console.WriteLine("Job ended normally.");
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Hangfire.Common;
 using Microsoft.EntityFrameworkCore;
+using Hangfire.Storage;
 
 namespace Exico.HF.DbAccess.Managers
 {
@@ -149,12 +150,18 @@ namespace Exico.HF.DbAccess.Managers
                 if(record.JobType==JobType.FireAndForget || record.JobType == JobType.Scheduled)
                 {
                     BgClient.Delete(record.HfJobId);
-                    record.Status = "Deleted"; //from enum
+                    record.Status = "Cancelled"; //from enum
                 }
                 else
                 {
-                    RecClient.RemoveIfExists(record.HfJobId);
-                    record.Status = "Deleted"; //from enum
+                   // RecClient.RemoveIfExists(record.HfJobId);
+
+                    var job = JobStorage.Current.GetConnection().GetRecurringJobs().FirstOrDefault(x => x.Id == record.HfJobId);
+                    if (job != null)
+                    {
+                        this.BgClient.Delete(job.LastJobId);
+                        record.Status = "Cancelled"; //from enum
+                    }
 
                 }
                 await this.DbCtx.SaveChangesAsync();
