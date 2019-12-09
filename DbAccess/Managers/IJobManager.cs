@@ -15,6 +15,18 @@ namespace Exico.HF.DbAccess.Managers
         Task<HfUserJob> Create(IScheduledTaskOptions options, string name, string note);
         Task<HfUserJob> Create(IRecurringTaskOptions options, string name, string note);
 
-        Task<bool> Cancel(int hfJobId); //is not deleting a job, cancel should stop running current execution and keep the HfJob definition
+        /// <summary>
+        /// Just stops the current execution. Doesn't delete the task.
+        /// </summary>
+        /// <param name="id">Task id of the user task , not HF job id</param>
+        /// <returns></returns>
+        Task<bool> Cancel(int id);
+
+        /// <summary>
+        /// Stops the current execution and deletes the job as well.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<bool> Delete(int id);
     }
 }
