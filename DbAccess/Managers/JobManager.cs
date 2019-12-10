@@ -11,6 +11,7 @@ using Hangfire.Common;
 using Microsoft.EntityFrameworkCore;
 using Hangfire.Storage;
 using Exico.HF.Common.TasksOptionsImpl;
+using Hangfire.States;
 
 namespace Exico.HF.DbAccess.Managers
 {
@@ -35,7 +36,7 @@ namespace Exico.HF.DbAccess.Managers
 
         public async Task<HfUserJob> Create(IBaseTaskOptions options, string name, string note)
         {
-      
+
             var userJob = await CreateHfUserJob(options, name, note);
             options.SetUserTaskId(userJob.Id);
             var hfJobId = string.Empty;
@@ -125,21 +126,9 @@ namespace Exico.HF.DbAccess.Managers
         public async Task RunNow(int id)
         {
             var record = await GetHfUserJob(id);
-            if (IsRecurringJob(record))
-            {
-                RecClient.Trigger(record.HfJobId);
-            }
-            else if (IsScheduledJob(record))
-            {
-                var hfJobId = BgClient.Enqueue<IFireAndForgetTask>(x => x.Run(record.JsonOption, JobCancellationToken.Null));
-                UpdateHfUserJob(record.Id,hfJobId,new ScheduledTaskOptions().)
-
-                    // start from here
-            }
-            else
-            {
-                throw new Exception("Only recurring or scheduled jobs can be run manbually");
-            }
+            if (IsRecurringJob(record)) RecClient.Trigger(record.HfJobId);
+            else if (IsFireAndForgetOrScheduled(record)) BgClient.ChangeState(record.HfJobId, new EnqueuedState());
+            else throw new Exception("Invalid type of job detected");
         }
 
         #region Helper methods
@@ -164,11 +153,8 @@ namespace Exico.HF.DbAccess.Managers
                 }
                 return true;
             }
-            else
-            {
-                return false;
-            }
 
+            return false;
         }
         private async Task<HfUserJob> CreateHfUserJob(IBaseTaskOptions options, string name, string note)
         {
