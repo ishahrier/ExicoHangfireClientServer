@@ -11,9 +11,14 @@ namespace Exico.HF.DbAccess.Managers
 {
     public interface IJobManager
     {
-        Task<HfUserJob> Create(IFireAndForgetTaskOptions options, string name, string note);
-        Task<HfUserJob> Create(IScheduledTaskOptions options, string name, string note);
-        Task<HfUserJob> Create(IRecurringTaskOptions options, string name, string note);
+        /// <summary>
+        /// Create a user task (FnF, schduled or recurring)
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="name"></param>
+        /// <param name="note"></param>
+        /// <returns></returns>
+        Task<HfUserJob> Create(IBaseTaskOptions options, string name, string note );
 
         /// <summary>
         /// Just stops the current execution. Doesn't delete the task.
@@ -23,10 +28,17 @@ namespace Exico.HF.DbAccess.Managers
         Task<bool> Cancel(int id);
 
         /// <summary>
-        /// Stops the current execution and deletes the job as well.
+        /// Stops the current execution and deletes the job/task as well.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">Task id of the user task , not HF job id</param>
         /// <returns></returns>
         Task<bool> Delete(int id);
+
+        /// <summary>
+        /// Run a task manually
+        /// </summary>
+        /// <param name="id">Task id of the user task , not HF job id</param>
+        /// <returns></returns>
+        Task RunNow(int id);
     }
 }
