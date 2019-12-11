@@ -1,34 +1,29 @@
 ﻿using Exico.HF.Common.Interfaces;
-using Exico.HF.DbAccess.Db;
 using Exico.HF.DbAccess.Db.Models;
+using Exico.HF.DbAccess.Db.Services;
 using Hangfire;
+using Hangfire.Common;
+using Hangfire.States;
+using Hangfire.Storage;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Hangfire.Common;
-using Microsoft.EntityFrameworkCore;
-using Hangfire.Storage;
-using Exico.HF.Common.TasksOptionsImpl;
-using Hangfire.States;
 
 namespace Exico.HF.DbAccess.Managers
 {
     public class JobManager : IJobManager
     {
-        private readonly ExicoHfDbContext DbCtx;
+        private readonly IExicoHFDbService DbService;
         private readonly IBackgroundJobClient BgClient;
         private readonly IRecurringJobManager RecClient;
         private readonly ILogger<IJobManager> Logger;
 
-        private JobManager()
-        {
-        }
+        private JobManager() { }
 
-        public JobManager(ExicoHfDbContext ctx, IBackgroundJobClient hfBgClient, IRecurringJobManager hfRecClient, ILogger<IJobManager> logger)
+        public JobManager(IExicoHFDbService dbSrv, IBackgroundJobClient hfBgClient, IRecurringJobManager hfRecClient, ILogger<IJobManager> logger)
         {
-            DbCtx = ctx;
+            DbService = dbSrv;
             BgClient = hfBgClient;
             RecClient = hfRecClient;
             Logger = logger;
@@ -37,7 +32,7 @@ namespace Exico.HF.DbAccess.Managers
         public async Task<HfUserJob> Create(IBaseTaskOptions options, string name, string note)
         {
 
-            var userJob = await CreateHfUserJob(options, name, note);
+            var userJob = await DbService.Create(name, note, options);
             options.SetUserTaskId(userJob.Id);
             var hfJobId = string.Empty;
 
@@ -65,17 +60,15 @@ namespace Exico.HF.DbAccess.Managers
                     _options.GetCronExpression(),
                     TimeZoneInfo.FindSystemTimeZoneById(_options.GetTimeZoneId()));
             }
-            else
-            {
-                throw new Exception("Invalid type of job detected");
-            }
+            else            
+                throw new Exception("Invalid job type detected.");            
 
-            return await UpdateHfUserJob(userJob.Id, hfJobId, options);
+            return await DbService.Update(userJob.Id, hfJobId, options);
         }
 
-        public async Task<bool> Cancel(int id)
+        public async Task<bool> Cancel(long id)
         {
-            var record = await GetHfUserJob(id);
+            var record = await DbService.Get(id);
             if (record != null)
             {
                 if (IsFireAndForgetOrScheduled(record))
@@ -90,22 +83,21 @@ namespace Exico.HF.DbAccess.Managers
                     if (job != null)
                         BgClient.Delete(job.LastJobId);
                 }
-
-                record.Status = "Cancelled"; //from enum
-                await DbCtx.SaveChangesAsync();
+                await DbService.UpdateStatus(record, "Cancelled");
                 return true;
             }
+
             return false;
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task<bool> Delete(long id)
         {
-            var record = await GetHfUserJob(id);
+            var record = await DbService.Get(id);
             if (record != null)
             {
                 if (IsFireAndForgetOrScheduled(record))
                     BgClient.Delete(record.HfJobId);
-                else
+                else if (IsRecurringJob(record))
                 {
                     var job = JobStorage.Current
                                         .GetConnection()
@@ -115,85 +107,32 @@ namespace Exico.HF.DbAccess.Managers
                         BgClient.Delete(job.LastJobId);
                     RecClient.RemoveIfExists(record.HfJobId);
                 }
-                DbCtx.HfUserJob.Remove(record);
-                await DbCtx.SaveChangesAsync();
-                return true;
+                else                
+                    throw new Exception("Invalid job type detected.");
+                
+                return await DbService.Delete(record);
             }
 
             return false;
         }
 
-        public async Task RunNow(int id)
+        public async Task RunNow(long id)
         {
-            var record = await GetHfUserJob(id);
-            if (IsRecurringJob(record)) RecClient.Trigger(record.HfJobId);
-            else if (IsFireAndForgetOrScheduled(record)) BgClient.ChangeState(record.HfJobId, new EnqueuedState());
-            else throw new Exception("Invalid type of job detected");
+            var record = await DbService.Get(id);
+
+            if (IsRecurringJob(record))
+                RecClient.Trigger(record.HfJobId);
+            else if (IsFireAndForgetOrScheduled(record))
+                BgClient.ChangeState(record.HfJobId, new EnqueuedState());
+            else
+                throw new Exception("Invalid job type detected.");
         }
 
-        #region Helper methods
-        public async Task<bool> DeleteJob(long userJobId)
-        {
-            var userJob = await DbCtx.HfUserJob.Where(x => x.Id == userJobId).FirstOrDefaultAsync();
-            if (userJob != null && userJob.Id == userJobId)
-            {
-                var hfId = userJob.HfJobId;
-                switch (userJob.JobType)
-                {
-                    case JobType.FireAndForget:
-                    case JobType.Scheduled:
-                        BgClient.Delete(hfId);
-                        break;
-                    case JobType.Recurring:
-                        RecClient.RemoveIfExists(hfId);
-                        break;
-                    default:
-                        throw new Exception("Invalid job type detected");
-
-                }
-                return true;
-            }
-
-            return false;
-        }
-        private async Task<HfUserJob> CreateHfUserJob(IBaseTaskOptions options, string name, string note)
-        {
-            if (!options.Validate()) throw new Exception("Options not valid.");
-
-            //create db record to get the db ID
-            var userJob = new HfUserJob()
-            {
-                CreatedOn = DateTimeOffset.UtcNow,
-                Name = name,
-                Note = note,
-                UserId = options.GetUserId(),
-                JobType = options.GetJobType()
-            };
-
-            await DbCtx.HfUserJob.AddAsync(userJob);
-            DbCtx.SaveChangesAsync().Wait();
-
-            //return newly created job
-            return userJob;
-        }
-        private async Task<HfUserJob> GetHfUserJob(int id) => await DbCtx.HfUserJob.FirstOrDefaultAsync(x => x.Id == id);
+        #region Helper methods 
         private bool IsRecurringJob(HfUserJob record) => record?.JobType == JobType.Recurring;
         private bool IsScheduledJob(HfUserJob record) => record?.JobType == JobType.Scheduled;
         private bool IsFireAndForgetJob(HfUserJob record) => record?.JobType == JobType.FireAndForget;
         private bool IsFireAndForgetOrScheduled(HfUserJob record) => IsScheduledJob(record) || IsFireAndForgetJob(record);
-        private async Task<HfUserJob> UpdateHfUserJob(long userJobId, string hfJobId, IBaseTaskOptions options)
-        {
-            var toBeUpdated = DbCtx.HfUserJob.FirstOrDefault(x => x.Id == userJobId);
-            //update db
-            toBeUpdated.HfJobId = hfJobId;
-            toBeUpdated.JsonOption = options.ToJson();
-            toBeUpdated.UpdatedOn = DateTimeOffset.UtcNow;
-            DbCtx.Update(toBeUpdated);
-            await DbCtx.SaveChangesAsync();
-
-            //return updated job
-            return toBeUpdated;
-        }
         #endregion
     }
 }
