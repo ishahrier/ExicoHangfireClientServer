@@ -5,7 +5,7 @@ using Hangfire.Server;
 using Hangfire.States;
 using Hangfire.Storage;
 
-namespace Exico.HF.Common.Extentions
+namespace Exico.HF.DbAccess.Extentions
 {
     public class ExicoHfFilter :
        JobFilterAttribute,

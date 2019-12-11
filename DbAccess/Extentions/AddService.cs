@@ -15,6 +15,7 @@ namespace Exico.HF.DbAccess.Extentions
         {
             services.AddScoped<IJobManager, JobManager>();
             services.AddDbContext<ExicoHfDbContext>(x => x.UseSqlServer(conString));
+            GlobalJobFilters.Filters.Add(new ExicoHfFilter());
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Exico.HF.Common.Extentions
             services.AddScoped<IFireAndForgetTaskOptions, FireAndForgetTaskOptions>();
             services.AddScoped<IScheduledTaskOptions, ScheduledTaskOptions>();
             services.AddScoped<IRecurringTaskOptions, RecurringTaskOptions>();
-            GlobalJobFilters.Filters.Add(new ExicoHfFilter());
+            
 
         }
     }
