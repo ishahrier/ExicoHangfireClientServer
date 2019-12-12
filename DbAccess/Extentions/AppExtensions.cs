@@ -25,9 +25,7 @@ namespace Exico.HF.DbAccess.Extentions
 
         public static void UseExicoHfExtension (this IApplicationBuilder app)
         {
-            //var dbService = app.ApplicationServices.GetService<IExicoHFDbService>();
-          //  var d = app.ApplicationServices.GetService<IExicoHFDbService>();
-          //  GlobalJobFilters.Filters.Add(app.ApplicationServices.GetRequiredService<MarkerFilter>());
+            GlobalJobFilters.Filters.Add(app.ApplicationServices.GetRequiredService<MarkerFilter>());
         }
     }
 }

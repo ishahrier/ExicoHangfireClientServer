@@ -22,10 +22,11 @@ namespace HFServer
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+            .UseDefaultServiceProvider(options => options.ValidateScopes = false)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
     }
 
     public class MyFnFJob : ABaseFireAndForgetTask
@@ -43,10 +44,10 @@ namespace HFServer
         {
             var myOptions = (IFireAndForgetTaskOptions)options;
             Console.ForegroundColor = ConsoleColor.Cyan;
-            
+
             Console.ResetColor();
             bool cancelled = false;
-            for(int i = 1; i <= 10 && !cancelled; i++)
+            for (int i = 1; i <= 10 && !cancelled; i++)
             {
                 Console.WriteLine($"User side task id : {options.GetUserTaskId()} | User id: {options.GetUserId()} ");
                 Thread.Sleep(2000);
@@ -55,15 +56,15 @@ namespace HFServer
                     cancellationToken.ThrowIfCancellationRequested();
 
                 }
-                catch(OperationCanceledException ex)
+                catch (OperationCanceledException ex)
                 {
                     Console.WriteLine($"Cancellation requested for job id {options.GetUserTaskId()}. quiting job...");
                     cancelled = true;
-                }               
-                
+                }
+
             }
-            if(!cancelled)
-                Console.WriteLine("Job ended normally."); 
+            if (!cancelled)
+                Console.WriteLine("Job ended normally.");
         }
     }
 
