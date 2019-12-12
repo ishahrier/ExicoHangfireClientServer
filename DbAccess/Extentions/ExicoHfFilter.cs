@@ -1,4 +1,5 @@
 ﻿using System;
+using Exico.HF.DbAccess.Db.Services;
 using Hangfire.Client;
 using Hangfire.Common;
 using Hangfire.Server;
@@ -7,20 +8,21 @@ using Hangfire.Storage;
 
 namespace Exico.HF.DbAccess.Extentions
 {
+    public interface MarkerFilter
+    {
+
+    }
     public class ExicoHfFilter :
        JobFilterAttribute,
        IClientFilter,
        IServerFilter,
        IElectStateFilter,
-       IApplyStateFilter
+       IApplyStateFilter,
+        MarkerFilter
     {
 
-        //private readonly IServiceProvider _services;
-
-        //public ExicoHfFilter(IServiceProvider services)
-        //{
-        //    _services = services;
-        //}
+        private readonly IExicoHFDbService _dbService;
+        public ExicoHfFilter(IExicoHFDbService dbService) => _dbService = dbService;
 
         public void OnCreating(CreatingContext context)
         {

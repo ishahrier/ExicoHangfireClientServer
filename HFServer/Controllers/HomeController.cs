@@ -8,6 +8,7 @@ using Exico.HF.DbAccess.Managers;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using HFServer.Models;
+using Exico.HF.DbAccess.Extentions;
 
 namespace HFServer.Controllers
 {
@@ -18,6 +19,7 @@ namespace HFServer.Controllers
         public HomeController(IJobManager jm)
         {
             _jm = jm;
+   
         }
         public IActionResult Index()
         {

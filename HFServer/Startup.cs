@@ -43,7 +43,7 @@ namespace HFServer
                 }));
             services.AddHangfireServer();
             services.AddExicoHfExtension();
-            services.AddExicoHfDbServices(Configuration.GetConnectionString("HangfireConnection"));
+            services.AddExicoHfExtension(Configuration.GetConnectionString("HangfireConnection"));
 
             services.AddScoped<IFireAndForgetTask, MyFnFJob>();
             services.AddScoped<IScheduledTask, MyScheduledJob>();
@@ -67,7 +67,7 @@ namespace HFServer
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
+            app.UseExicoHfExtension();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseHangfireDashboard();//HANGFIRE

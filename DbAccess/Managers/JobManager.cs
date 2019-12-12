@@ -14,37 +14,37 @@ namespace Exico.HF.DbAccess.Managers
 {
     public class JobManager : IJobManager
     {
-        private readonly IExicoHFDbService DbService;
-        private readonly IBackgroundJobClient BgClient;
-        private readonly IRecurringJobManager RecClient;
-        private readonly ILogger<IJobManager> Logger;
+        private readonly IExicoHFDbService _dbService;
+        private readonly IBackgroundJobClient _bgClient;
+        private readonly IRecurringJobManager _recClient;
+        private readonly ILogger<IJobManager> _logger;
 
         private JobManager() { }
 
         public JobManager(IExicoHFDbService dbSrv, IBackgroundJobClient hfBgClient, IRecurringJobManager hfRecClient, ILogger<IJobManager> logger)
         {
-            DbService = dbSrv;
-            BgClient = hfBgClient;
-            RecClient = hfRecClient;
-            Logger = logger;
+            _dbService = dbSrv;
+            _bgClient = hfBgClient;
+            _recClient = hfRecClient;
+            _logger = logger;
         }
 
         public async Task<HfUserJob> Create(IBaseTaskOptions options, string name, string note)
         {
 
-            var userJob = await DbService.Create(name, note, options);
+            var userJob = await _dbService.Create(name, note, options);
             options.SetUserTaskId(userJob.Id);
             var hfJobId = string.Empty;
 
             if (IsFireAndForgetJob(userJob))
             {
                 var _options = options as IFireAndForgetTaskOptions;
-                hfJobId = BgClient.Enqueue<IFireAndForgetTask>(x => x.Run(_options.ToJson(), JobCancellationToken.Null));
+                hfJobId = _bgClient.Enqueue<IFireAndForgetTask>(x => x.Run(_options.ToJson(), JobCancellationToken.Null));
             }
             else if (IsScheduledJob(userJob))
             {
                 var _options = options as IScheduledTaskOptions;
-                hfJobId = BgClient.Schedule<IScheduledTask>(x => x.Run(_options.ToJson(),
+                hfJobId = _bgClient.Schedule<IScheduledTask>(x => x.Run(_options.ToJson(),
                       JobCancellationToken.Null),
                       TimeZoneInfo.ConvertTimeToUtc(_options.GetScheduledAt(),
                       TimeZoneInfo.FindSystemTimeZoneById(_options.GetTimeZoneId())));
@@ -54,7 +54,7 @@ namespace Exico.HF.DbAccess.Managers
             {
                 var _options = options as IRecurringTaskOptions;
                 hfJobId = Guid.NewGuid().ToString();
-                RecClient.AddOrUpdate(hfJobId,
+                _recClient.AddOrUpdate(hfJobId,
                     Job.FromExpression<IRecurringTask>((x) => x.Run(_options.ToJson(),
                     JobCancellationToken.Null)),
                     _options.GetCronExpression(),
@@ -63,16 +63,16 @@ namespace Exico.HF.DbAccess.Managers
             else            
                 throw new Exception("Invalid job type detected.");            
 
-            return await DbService.Update(userJob.Id, hfJobId, options);
+            return await _dbService.Update(userJob.Id, hfJobId, options);
         }
 
         public async Task<bool> Cancel(long id)
         {
-            var record = await DbService.Get(id);
+            var record = await _dbService.Get(id);
             if (record != null)
             {
                 if (IsFireAndForgetOrScheduled(record))
-                    BgClient.Delete(record.HfJobId);
+                    _bgClient.Delete(record.HfJobId);
                 else
                 {
                     var job = JobStorage.Current
@@ -81,9 +81,9 @@ namespace Exico.HF.DbAccess.Managers
                         .FirstOrDefault(x => x.Id == record.HfJobId);
 
                     if (job != null)
-                        BgClient.Delete(job.LastJobId);
+                        _bgClient.Delete(job.LastJobId);
                 }
-                await DbService.UpdateStatus(record, "Cancelled");
+                await _dbService.UpdateStatus(record, "Cancelled");
                 return true;
             }
 
@@ -92,11 +92,11 @@ namespace Exico.HF.DbAccess.Managers
 
         public async Task<bool> Delete(long id)
         {
-            var record = await DbService.Get(id);
+            var record = await _dbService.Get(id);
             if (record != null)
             {
                 if (IsFireAndForgetOrScheduled(record))
-                    BgClient.Delete(record.HfJobId);
+                    _bgClient.Delete(record.HfJobId);
                 else if (IsRecurringJob(record))
                 {
                     var job = JobStorage.Current
@@ -104,13 +104,13 @@ namespace Exico.HF.DbAccess.Managers
                                         .GetRecurringJobs()
                                         .FirstOrDefault(x => x.Id == record.HfJobId);
                     if (job != null)
-                        BgClient.Delete(job.LastJobId);
-                    RecClient.RemoveIfExists(record.HfJobId);
+                        _bgClient.Delete(job.LastJobId);
+                    _recClient.RemoveIfExists(record.HfJobId);
                 }
                 else                
                     throw new Exception("Invalid job type detected.");
                 
-                return await DbService.Delete(record);
+                return await _dbService.Delete(record);
             }
 
             return false;
@@ -118,12 +118,12 @@ namespace Exico.HF.DbAccess.Managers
 
         public async Task RunNow(long id)
         {
-            var record = await DbService.Get(id);
+            var record = await _dbService.Get(id);
 
             if (IsRecurringJob(record))
-                RecClient.Trigger(record.HfJobId);
+                _recClient.Trigger(record.HfJobId);
             else if (IsFireAndForgetOrScheduled(record))
-                BgClient.ChangeState(record.HfJobId, new EnqueuedState());
+                _bgClient.ChangeState(record.HfJobId, new EnqueuedState());
             else
                 throw new Exception("Invalid job type detected.");
         }
