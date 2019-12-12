@@ -11,7 +11,6 @@ namespace Exico.HF.Common.Bases
         protected ABaseTaskOptions()
         {
             _Options = new Dictionary<string, object>();
-            SetRunType( Interfaces.RunType.ASync);
         }
 
         public Dictionary<string, object> _Options;
@@ -20,7 +19,6 @@ namespace Exico.HF.Common.Bases
         public string GetTimeZoneId() => GetOption<string>("TimeZoneId");
         public long GetUserTaskId() => GetOption<long>("UserTaskId");
         public string GetJobType() => GetOption<string>("JobType");
-        public string GetRunType() => GetOption<string>("RunType");
         public string GetHfJobId() => GetOption<string>("HfJobId");
 
         public void SetHfJobId(string id) => SetOption("HfJobId", id);
@@ -28,7 +26,6 @@ namespace Exico.HF.Common.Bases
         public void SetTimeZoneId(string id) => SetOption("TimeZoneId", id);
         public void SetUserTaskId(long id) => SetOption("UserTaskId", id);
         public void SetJobType(string type) => SetOption("JobType", type);
-        public void SetRunType(string type) => SetOption("RunType", type);
 
         public Dictionary<string, object> BuildObjectDictionary() => _Options;
 
