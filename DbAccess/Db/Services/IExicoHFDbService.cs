@@ -1,4 +1,6 @@
-﻿using Exico.HF.Common.Interfaces;
+﻿using Exico.HF.Common.DomainModels;
+using Exico.HF.Common.Enums;
+using Exico.HF.Common.Interfaces;
 using Exico.HF.DbAccess.Db.Models;
 using System;
 using System.Collections.Generic;
@@ -7,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace Exico.HF.DbAccess.Db.Services
 {
-    public interface IExicoHFDbService: IDisposable
+    public interface IExicoHFDbService : IDisposable
     {
-        Task<HfUserJob> Get(long userJobId);
-        Task<HfUserJob> Update(long userJobId, string hfJobId, IBaseTaskOptions options);
-        Task<HfUserJob> Create( string name, string note, IBaseTaskOptions options);
-        Task<HfUserJob> UpdateStatus(HfUserJob data, string status);
-
-        Task<bool> Delete(HfUserJob job);
+        Task<HfUserJob> Get(int userJobId);
+        Task<HfUserJob> SetHfJobId(int userJobId, string hfJobId);
+        Task<HfUserJob> Create(HfUserJob data);
+        Task<HfUserJob> UpdateStatus(int userJobId, JobStatus status);
+        Task<HfUserJob> Update(HfUserJob data);
+        Task<bool> Delete(int userJobId);
     }
 }

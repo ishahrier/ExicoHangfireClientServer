@@ -10,6 +10,9 @@ namespace Exico.HF.DbAccess.Db
     {
 
         public DbSet<HfUserJob> HfUserJob { get; set; }
+        public DbSet<HfUserRecurringJob> HfUserRecurringJob { get; set; }
+        public DbSet<HfUserScheduledJob> HfUserScheduledJob { get; set; }
+
         public ExicoHfDbContext(DbContextOptions<ExicoHfDbContext> options) : base(options)
         {
             

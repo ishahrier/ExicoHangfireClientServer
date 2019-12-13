@@ -1,4 +1,6 @@
-﻿using Exico.HF.Common.Interfaces;
+﻿using Exico.HF.Common.DomainModels;
+using Exico.HF.Common.Enums;
+using Exico.HF.Common.Interfaces;
 using Exico.HF.DbAccess.Db.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,27 +20,53 @@ namespace Exico.HF.DbAccess.Db.Services
             _logger = logger;
         }
 
-        public async Task<HfUserJob> Create(string name, string note, IBaseTaskOptions options)
+        public async Task<HfUserJob> Create(HfUserJob data)
         {
-            if (!options.Validate()) throw new Exception("Options not valid.");
-            var userJob = new HfUserJob()
-            {
-                CreatedOn = DateTimeOffset.UtcNow,
-                Name = name,
-                Note = note,
-                UserId = options.GetUserId(),
-                JobType = options.GetJobType()
-            };
-            await _dbCtx.HfUserJob.AddAsync(userJob);
-            _dbCtx.SaveChangesAsync().Wait();
+            data.CreatedOn = DateTimeOffset.Now;
+            data.HfJobId = null;
+            data.UpdatedOn = null;
+            data.Id = 0;
 
-            return userJob;
+            await _dbCtx.HfUserJob.AddAsync(data);
+            await _dbCtx.SaveChangesAsync();
+
+            return data;
         }
 
-        public async Task<bool> Delete(HfUserJob job)
+        public async Task<bool> Delete(int userJobId)
         {
-            _dbCtx.HfUserJob.Remove(job);
+            var data = _dbCtx.Find<HfUserJob>(userJobId);
+            if (data == null) return false;
+            else _dbCtx.HfUserJob.Remove(data);
             return await _dbCtx.SaveChangesAsync() > 0;
+        }
+
+        public async Task<HfUserJob> Get(int userJobId) => await _dbCtx.HfUserJob.AsNoTracking().FirstOrDefaultAsync(x => x.Id == userJobId);
+
+        public async Task<HfUserJob> SetHfJobId(int userJobId, string hfJobId)
+        {
+            var toBeUpdated = await _dbCtx.HfUserJob.FirstOrDefaultAsync(x => x.Id == userJobId);
+            toBeUpdated.HfJobId = hfJobId;
+            toBeUpdated.UpdatedOn = DateTimeOffset.UtcNow;
+            _dbCtx.Update(toBeUpdated);
+            await _dbCtx.SaveChangesAsync();
+            return toBeUpdated;
+        }
+
+        public async Task<HfUserJob> Update(HfUserJob data)
+        {
+            _dbCtx.HfUserJob.Attach(data);
+            data.UpdatedOn = DateTimeOffset.UtcNow;
+            _dbCtx.Update(data);
+            await _dbCtx.SaveChangesAsync();
+            return data;
+        }
+
+        public async Task<HfUserJob> UpdateStatus(int userJobId, JobStatus status)
+        {
+            var data = await Get(userJobId);
+            data.Status = status;
+            return await Update(data);
         }
 
         public void Dispose()
@@ -46,29 +74,5 @@ namespace Exico.HF.DbAccess.Db.Services
             if (_dbCtx != null) _dbCtx.Dispose();
         }
 
-        public async Task<HfUserJob> Get(long userJobId) => await _dbCtx.HfUserJob.AsNoTracking().FirstOrDefaultAsync(x => x.Id == userJobId);
-
-        public async Task<HfUserJob> Update(long userJobId, string hfJobId, IBaseTaskOptions options)
-        {
-            var toBeUpdated = await _dbCtx.HfUserJob.FirstOrDefaultAsync(x => x.Id == userJobId);
-            toBeUpdated.HfJobId = hfJobId;
-            toBeUpdated.JsonOption = options.ToJson();
-            toBeUpdated.UpdatedOn = DateTimeOffset.UtcNow;
-            _dbCtx.Update(toBeUpdated);
-            await _dbCtx.SaveChangesAsync();
-
-            return toBeUpdated;
-        }
-
-        public async Task<HfUserJob> UpdateStatus(HfUserJob data, string status)
-        {
-            _dbCtx.HfUserJob.Attach(data);
-            data.Status = status;
-            data.UpdatedOn = DateTimeOffset.UtcNow;
-            _dbCtx.Update(data);
-            await _dbCtx.SaveChangesAsync();
-
-            return data;
-        }
     }
 }
