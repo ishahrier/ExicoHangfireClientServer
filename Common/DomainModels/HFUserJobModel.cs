@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Exico.HF.Common.DomainModels
 {
-    public class HfUserJobModel
+    public abstract class HfUserJobModel
     {
         public int Id { get; set; }
  

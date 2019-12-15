@@ -9,13 +9,20 @@ using System.Threading.Tasks;
 
 namespace Exico.HF.DbAccess.Db.Services
 {
-    public interface IExicoHFDbService : IDisposable
+    public interface IExicoHfDbService : IDisposable
     {
         Task<HfUserJob> Get(int userJobId);
-        Task<HfUserJob> SetHfJobId(int userJobId, string hfJobId);
-        Task<HfUserJob> Create(HfUserJob data);
+        Task<bool> SetHfJobId(int userJobId, string hfJobId);
+
+        Task<HfUserFireAndForgetJobModel> Create(HfUserFireAndForgetJobModel data);
+        Task<HfUserScheduledJobModel> Create(HfUserScheduledJobModel data);
+        Task<HfUserRecurringJobModel> Create(HfUserRecurringJobModel data);
+
         Task<HfUserJob> UpdateStatus(int userJobId, JobStatus status);
-        Task<HfUserJob> Update(HfUserJob data);
+        Task<HfUserFireAndForgetJobModel> Update(HfUserFireAndForgetJobModel data);
+        Task<HfUserScheduledJobModel> Update(HfUserScheduledJobModel data);
+        Task<HfUserRecurringJobModel> Update(HfUserRecurringJobModel data);
+            
         Task<bool> Delete(int userJobId);
     }
 }

@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace Exico.HF.DbAccess.Db.Services
 {
-    public class ExicoHFDbService : IExicoHFDbService
+    public class ExicoHfDbService : IExicoHFDbService
     {
         private readonly ExicoHfDbContext _dbCtx;
         private readonly ILogger _logger;
 
-        public ExicoHFDbService(ExicoHfDbContext ctx, ILogger<ExicoHfDbContext> logger)
+        public ExicoHfDbService(ExicoHfDbContext ctx, ILogger<ExicoHfDbContext> logger)
         {
             _dbCtx = ctx;
             _logger = logger;
