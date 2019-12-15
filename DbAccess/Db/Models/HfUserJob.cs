@@ -35,6 +35,8 @@ namespace Exico.HF.DbAccess.Db.Models
         public DateTimeOffset? LastRun { get; set; }
         public DateTimeOffset? NextRun { get; set; }
         public string CronExpression { get; set; }
+        public HfUserJob HfUserJob { get; set; }
+
 
     }
 
@@ -43,5 +45,6 @@ namespace Exico.HF.DbAccess.Db.Models
         public int Id { get; set; }
         public int HfUserJobId { get; set; }
         public DateTimeOffset ScheduledAt { get; set; }
+        public HfUserJob HfUserJob { get; set; }
     }
 }
