@@ -9,24 +9,7 @@ namespace Exico.HF.DbAccess.Extentions
 {
     public static class ModelExtensions
     {
-        public static HfUserJobModel ToDomainModel(this HfUserJob data)
-        {
-            return new HfUserJobModel()
-            {
-                JobType = data.JobType,
-                CreatedOn = data.CreatedOn,
-                Name = data.Name,
-                Note = data.Note,
-                Status = data.Status,
-                TimeZone = data.TimeZoneId,
-                UpdatedOn = data.UpdatedOn,
-                UserId = data.UserId,
-                WorkDataId = data.WorkDataId,
-                WorkerClass = data.WorkerClass,
-                Id = data.Id
-            };
-        }
-
+ 
         public static HfUserJob ToDbModel(this HfUserJobModel data)
         {
             return new HfUserJob()
@@ -36,7 +19,7 @@ namespace Exico.HF.DbAccess.Extentions
                 Name = data.Name,
                 Note = data.Note,
                 Status = data.Status,
-                TimeZoneId = data.TimeZone,
+                TimeZoneId = data.TimeZoneId,
                 UpdatedOn = data.UpdatedOn,
                 UserId = data.UserId,
                 WorkDataId = data.WorkDataId,

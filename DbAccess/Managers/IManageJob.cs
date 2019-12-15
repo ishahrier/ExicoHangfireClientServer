@@ -15,7 +15,7 @@ namespace Exico.HF.DbAccess.Managers
         /// <param name="name"></param>
         /// <param name="note"></param>
         /// <returns></returns>
-        Task<HfUserJobModel> Create(HFUserJobModel data);
+        Task<HfUserJobModel> Create(HfUserJobModel data);
 
         /// <summary>
         /// Just stops the current execution. Doesn't delete the task.

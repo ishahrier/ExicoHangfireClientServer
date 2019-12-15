@@ -13,7 +13,7 @@ namespace Exico.HF.Common.DomainModels
         [Required(AllowEmptyStrings = false)]
         public string WorkerClass { get; set; }
         [Required]
-        public string TimeZone { get; set; }
+        public string TimeZoneId { get; set; }
         [Required, MinLength(1)]
         public string UserId { get; set; }
         [Required, MinLength(1)]

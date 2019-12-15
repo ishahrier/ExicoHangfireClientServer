@@ -21,8 +21,8 @@ namespace Exico.HF.DbAccess.Extentions
         MarkerFilter
     {
 
-        private readonly IExicoHFDbService _dbService;
-        public ExicoHfFilter(IExicoHFDbService dbService) => _dbService = dbService;
+        private readonly IExicoHfDbService _dbService;
+        public ExicoHfFilter(IExicoHfDbService dbService) => _dbService = dbService;
 
         public void OnCreating(CreatingContext context)
         {
