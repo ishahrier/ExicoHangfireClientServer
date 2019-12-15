@@ -21,7 +21,7 @@ namespace Exico.HF.DbAccess.Db.Models
         public string WorkerClass { get; set; }
         public string Note { get; set; }
         [Required]
-        public string TimeZone { get; set; }
+        public string TimeZoneId { get; set; }
         [Required]
         public DateTimeOffset CreatedOn { get; set; }
         public DateTimeOffset? UpdatedOn { get; set; }
@@ -34,7 +34,8 @@ namespace Exico.HF.DbAccess.Db.Models
         public int? LastHfJobId { get; set; }
         public DateTimeOffset? LastRun { get; set; }
         public DateTimeOffset? NextRun { get; set; }
-        public HfUserJob HfUserJob { get; set; }
+        public string CronExpression { get; set; }
+
     }
 
     public class HfUserScheduledJob
@@ -42,8 +43,5 @@ namespace Exico.HF.DbAccess.Db.Models
         public int Id { get; set; }
         public int HfUserJobId { get; set; }
         public DateTimeOffset ScheduledAt { get; set; }
-        public string CronExpression { get; set; }
-        public HfUserJob HfUserJob { get; set; }
-
     }
 }

@@ -15,16 +15,16 @@ using System.Threading.Tasks;
 
 namespace Exico.HF.DbAccess.Managers
 {
-    public class JobManager : IJobManager
+    public class JobManager : IManageJob
     {
         private readonly IExicoHFDbService _dbService;
         private readonly IBackgroundJobClient _bgClient;
         private readonly IRecurringJobManager _recClient;
-        private readonly ILogger<IJobManager> _logger;
+        private readonly ILogger<IManageJob> _logger;
 
         private JobManager() { }
 
-        public JobManager(IExicoHFDbService dbSrv, IBackgroundJobClient hfBgClient, IRecurringJobManager hfRecClient, ILogger<IJobManager> logger)
+        public JobManager(IExicoHFDbService dbSrv, IBackgroundJobClient hfBgClient, IRecurringJobManager hfRecClient, ILogger<IManageJob> logger)
         {
             _dbService = dbSrv;
             _bgClient = hfBgClient;
@@ -39,29 +39,26 @@ namespace Exico.HF.DbAccess.Managers
             if (userJob != null)
             {
                 var hfJobId = string.Empty;
+
                 if (userJob.IsFireAndForgetJob())
                 {
-                    var _options = options as IFireAndForgetTaskOptions;
-                    hfJobId = _bgClient.Enqueue<IFireAndForgetTask>(x => x.Run(_options.ToJson(), JobCancellationToken.Null));
+                    hfJobId = _bgClient.Enqueue<IWork>(x => x.DoWork(userJob.Id, userJob.WorkDataId, JobCancellationToken.Null));
                 }
                 else if (userJob.IsScheduledJob())
                 {
-                    var _options = options as IScheduledTaskOptions;
-                    hfJobId = _bgClient.Schedule<IScheduledTask>(x => x.Run(_options.ToJson(),
-                          JobCancellationToken.Null),
-                          TimeZoneInfo.ConvertTimeToUtc(_options.GetScheduledAt(),
-                          TimeZoneInfo.FindSystemTimeZoneById(_options.GetTimeZoneId())));
-
+                    var userScheduledJob = new HfUserScheduledJob();
+                    hfJobId = _bgClient.Schedule<IWork>(x => x.DoWork(userJob.Id, userJob.WorkDataId, JobCancellationToken.Null),
+                          TimeZoneInfo.ConvertTimeToUtc(userScheduledJob.ScheduledAt.DateTime.ToUnspecifiedDateTime(),
+                          TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId)));
                 }
                 else if (userJob.IsRecurringJob())
                 {
-                    var _options = options as IRecurringTaskOptions;
                     hfJobId = Guid.NewGuid().ToString();
+                    var userRecurringJob = new HfUserRecurringJob();
                     _recClient.AddOrUpdate(hfJobId,
-                        Job.FromExpression<IRecurringTask>((x) => x.Run(_options.ToJson(),
-                        JobCancellationToken.Null)),
-                        _options.GetCronExpression(),
-                        TimeZoneInfo.FindSystemTimeZoneById(_options.GetTimeZoneId()));
+                        Job.FromExpression<IWork>(x => x.DoWork(userJob.Id, userJob.WorkDataId, JobCancellationToken.Null)),
+                        userRecurringJob.CronExpression,
+                        TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId));
                 }
                 else
                     throw new Exception("Invalid job type detected.");
@@ -115,9 +112,9 @@ namespace Exico.HF.DbAccess.Managers
                         _bgClient.Delete(job.LastJobId);
                     _recClient.RemoveIfExists(record.HfJobId);
                 }
-                else                
+                else
                     throw new Exception("Invalid job type detected.");
-                
+
                 return await _dbService.Delete(record.Id);
             }
 

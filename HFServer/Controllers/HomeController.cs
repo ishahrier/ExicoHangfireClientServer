@@ -14,9 +14,9 @@ namespace HFServer.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IJobManager _jm;
+        private readonly IManageJob _jm;
 
-        public HomeController(IJobManager jm)
+        public HomeController(IManageJob jm)
         {
             _jm = jm;
    

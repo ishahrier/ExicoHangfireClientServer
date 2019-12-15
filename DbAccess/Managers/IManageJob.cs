@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Exico.HF.DbAccess.Managers
 {
-    public interface IJobManager
+    public interface IManageJob
     {
         /// <summary>
         /// Create a user task (FnF, schduled or recurring)

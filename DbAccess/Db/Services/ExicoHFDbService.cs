@@ -2,6 +2,7 @@
 using Exico.HF.Common.Enums;
 using Exico.HF.Common.Interfaces;
 using Exico.HF.DbAccess.Db.Models;
+using Exico.HF.DbAccess.Extentions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -33,15 +34,47 @@ namespace Exico.HF.DbAccess.Db.Services
             return data;
         }
 
+        public async Task<HfUserScheduledJob> Create(HfUserScheduledJob data)
+        {
+            await _dbCtx.HfUserScheduledJob.AddAsync(data);
+            await _dbCtx.SaveChangesAsync();
+            return data;
+        }
+
+        public async Task<HfUserRecurringJob> Create(HfUserRecurringJob data)
+        {
+            await _dbCtx.HfUserRecurringJob.AddAsync(data);
+            await _dbCtx.SaveChangesAsync();
+            return data;
+        }
+
         public async Task<bool> Delete(int userJobId)
         {
             var data = _dbCtx.Find<HfUserJob>(userJobId);
             if (data == null) return false;
-            else _dbCtx.HfUserJob.Remove(data);
+            else
+            {
+                if (data.IsScheduledJob())
+                {
+                    var rec = await _dbCtx.HfUserRecurringJob.FirstOrDefaultAsync(x => x.HfUserJobId == data.Id);
+                    _dbCtx.HfUserRecurringJob.Remove(rec);
+                }
+                else if (data.IsFireAndForgetJob())
+                {
+                    var rec = await _dbCtx.HfUserScheduledJob.FirstOrDefaultAsync(x => x.HfUserJobId == data.Id);
+                    _dbCtx.HfUserScheduledJob.Remove(rec);
+                }
+
+                _dbCtx.HfUserJob.Remove(data);
+
+            }
             return await _dbCtx.SaveChangesAsync() > 0;
         }
 
-        public async Task<HfUserJob> Get(int userJobId) => await _dbCtx.HfUserJob.AsNoTracking().FirstOrDefaultAsync(x => x.Id == userJobId);
+        public async Task<HfUserJob> Get(int userJobId)
+        {
+            return await _dbCtx.HfUserJob.AsNoTracking().FirstOrDefaultAsync(x => x.Id == userJobId);
+        }
 
         public async Task<HfUserJob> SetHfJobId(int userJobId, string hfJobId)
         {
@@ -73,6 +106,8 @@ namespace Exico.HF.DbAccess.Db.Services
         {
             if (_dbCtx != null) _dbCtx.Dispose();
         }
+
+
 
     }
 }

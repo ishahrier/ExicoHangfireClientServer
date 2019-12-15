@@ -18,9 +18,9 @@ namespace Exico.HF.Common.Interfaces
         /// 
         /// </summary>
         /// <param name="jobId">User job ID, created by user</param>
-        /// <param name="dataId">Id of the actual work data </param>
+        /// <param name="workDataId">Id of the actual work data </param>
         /// <param name="cancellationToken">hangfire cancellation token</param>
-        public void DoWork(uint jobId, uint dataId, JobCancellationToken cancellationToken);
+        public void DoWork(int jobId, int? workDataId, IJobCancellationToken cancellationToken);
 
         /// <summary>
         /// Data table needed by the work to understand WHAT to do , it is can been as INPUTS of a work.
