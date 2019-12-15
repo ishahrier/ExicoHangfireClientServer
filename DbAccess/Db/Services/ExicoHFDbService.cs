@@ -21,140 +21,114 @@ namespace Exico.HF.DbAccess.Db.Services
             _logger = logger;
         }
 
-        public Task<HfUserFireAndForgetJobModel> Create(HfUserFireAndForgetJobModel data)
+        public async Task<HfUserFireAndForgetJobModel> CreateFnf(HfUserFireAndForgetJobModel data)
+        {
+            var dbModel = data.ToDbModel();
+            await _dbCtx.HfUserJob.AddAsync(dbModel);
+            return (HfUserFireAndForgetJobModel)dbModel.ToDomainModel();
+        }
+
+        public async Task<HfUserScheduledJobModel> CreateScheduled(HfUserScheduledJobModel data)
+        {
+            var dbModel = data.ToDbModel();
+            await _dbCtx.HfUserScheduledJob.AddAsync(dbModel);
+            return  dbModel.ToDomainModel();
+        }
+
+        public async Task<HfUserRecurringJobModel> CreateRecurring(HfUserRecurringJobModel data)
+        {
+            var dbModel = data.ToDbModel();
+            await _dbCtx.HfUserRecurringJob.AddAsync(dbModel);
+            return  dbModel.ToDomainModel();
+        }
+
+        public async Task<bool> SetHfJobId(int userJobId, string hfJobId)
+        {
+            var toBeUpdated = await _dbCtx.HfUserJob.FirstOrDefaultAsync(x => x.Id == userJobId);
+            toBeUpdated.HfJobId = hfJobId;
+            toBeUpdated.UpdatedOn = DateTimeOffset.UtcNow;
+            _dbCtx.Update(toBeUpdated);
+            return await _dbCtx.SaveChangesAsync() > 0;
+        }
+
+        public Task<HfUserFireAndForgetJobModel> UpdateFnf(HfUserFireAndForgetJobModel data)
         {
             throw new NotImplementedException();
         }
 
-        public Task<HfUserScheduledJobModel> Create(HfUserScheduledJobModel data)
+        public Task<HfUserScheduledJobModel> UpdateScheduled(HfUserScheduledJobModel data)
         {
             throw new NotImplementedException();
         }
 
-        public Task<HfUserRecurringJobModel> Create(HfUserRecurringJobModel data)
+        public Task<HfUserRecurringJobModel> UpdateRecurring(HfUserRecurringJobModel data)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> Delete(int userJobId)
+        public async Task<bool> UpdateStatus(int userJobId, JobStatus status)
         {
-            throw new NotImplementedException();
+            var data = await _dbCtx.HfUserJob.FindAsync(userJobId);
+            data.Status = status;
+            return await _dbCtx.SaveChangesAsync() > 0;
         }
 
-        //public async Task<HfUserJob> Create(HfUserJob data)
-        //{
-        //    data.CreatedOn = DateTimeOffset.Now;
-        //    data.HfJobId = null;
-        //    data.UpdatedOn = null;
-        //    data.Id = 0;
+        public async Task<HfUserFireAndForgetJobModel> GetFnf(int userJobId)
+        {
+            var record = await _dbCtx.HfUserJob
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == userJobId);
+            if (record != null) return (HfUserFireAndForgetJobModel)record.ToDomainModel();
+            else return null;
+        }
 
-        //    await _dbCtx.HfUserJob.AddAsync(data);
-        //    await _dbCtx.SaveChangesAsync();
+        public async Task<HfUserScheduledJobModel> GetScheduled(int userJobId)
+        {
+            var record = await _dbCtx.HfUserScheduledJob
+                .AsNoTracking()
+                .Include(x => x.HfUserJob)
+                .FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
+            if (record != null) return record.ToDomainModel();
+            else return null;
+        }
 
-        //    return data;
-        //}
+        public async Task<HfUserRecurringJobModel> GetRecurring(int userJobId)
+        {
+            var record = await _dbCtx.HfUserRecurringJob
+                .AsNoTracking()
+                .Include(x => x.HfUserJob)
+                .FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
+            if (record != null) return record.ToDomainModel();
+            else return null;
+        }
 
-        //public async Task<HfUserScheduledJob> Create(HfUserScheduledJob data)
-        //{
-        //    await _dbCtx.HfUserScheduledJob.AddAsync(data);
-        //    await _dbCtx.SaveChangesAsync();
-        //    return data;
-        //}
+        public async Task<bool> DeleteFnf(int userJobId)
+        {
+            var data = await _dbCtx.HfUserJob.FirstOrDefaultAsync(x => x.Id == userJobId);
+            if (data == null) return false;
+            _dbCtx.HfUserJob.Remove(data);
+            return await _dbCtx.SaveChangesAsync() > 0;
+        }
 
-        //public async Task<HfUserRecurringJob> Create(HfUserRecurringJob data)
-        //{
-        //    await _dbCtx.HfUserRecurringJob.AddAsync(data);
-        //    await _dbCtx.SaveChangesAsync();
-        //    return data;
-        //}
+        public async Task<bool> DeleteScheduled(int userJobId)
+        {
+            var data = await _dbCtx.HfUserScheduledJob.FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
+            if (data == null) return false;
+            _dbCtx.HfUserScheduledJob.Remove(data);
+            return await _dbCtx.SaveChangesAsync() > 0;
+        }
 
-        //public async Task<bool> Delete(int userJobId)
-        //{
-        //    var data = _dbCtx.Find<HfUserJob>(userJobId);
-        //    if (data == null) return false;
-        //    else
-        //    {
-        //        if (data.IsScheduledJob())
-        //        {
-        //            var rec = await _dbCtx.HfUserRecurringJob.FirstOrDefaultAsync(x => x.HfUserJobId == data.Id);
-        //            _dbCtx.HfUserRecurringJob.Remove(rec);
-        //        }
-        //        else if (data.IsFireAndForgetJob())
-        //        {
-        //            var rec = await _dbCtx.HfUserScheduledJob.FirstOrDefaultAsync(x => x.HfUserJobId == data.Id);
-        //            _dbCtx.HfUserScheduledJob.Remove(rec);
-        //        }
-
-        //        _dbCtx.HfUserJob.Remove(data);
-
-        //    }
-        //    return await _dbCtx.SaveChangesAsync() > 0;
-        //}
-
-        //public async Task<HfUserJob> Get(int userJobId)
-        //{
-        //    return await _dbCtx.HfUserJob.AsNoTracking().FirstOrDefaultAsync(x => x.Id == userJobId);
-        //}
-
-        //public async Task<HfUserJob> SetHfJobId(int userJobId, string hfJobId)
-        //{
-        //    var toBeUpdated = await _dbCtx.HfUserJob.FirstOrDefaultAsync(x => x.Id == userJobId);
-        //    toBeUpdated.HfJobId = hfJobId;
-        //    toBeUpdated.UpdatedOn = DateTimeOffset.UtcNow;
-        //    _dbCtx.Update(toBeUpdated);
-        //    await _dbCtx.SaveChangesAsync();
-        //    return toBeUpdated;
-        //}
-
-        //public async Task<HfUserJob> Update(HfUserJob data)
-        //{
-        //    _dbCtx.HfUserJob.Attach(data);
-        //    data.UpdatedOn = DateTimeOffset.UtcNow;
-        //    _dbCtx.Update(data);
-        //    await _dbCtx.SaveChangesAsync();
-        //    return data;
-        //}
-
-        //public async Task<HfUserJob> UpdateStatus(int userJobId, JobStatus status)
-        //{
-        //    var data = await Get(userJobId);
-        //    data.Status = status;
-        //    return await Update(data);
-        //}
+        public async Task<bool> DeleteRecurring(int userJobId)
+        {
+            var data = await _dbCtx.HfUserRecurringJob.FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
+            if (data == null) return false;
+            _dbCtx.HfUserRecurringJob.Remove(data);
+            return await _dbCtx.SaveChangesAsync() > 0;
+        }
 
         public void Dispose()
         {
             if (_dbCtx != null) _dbCtx.Dispose();
-        }
-
-        public Task<HfUserJobModel> Get(int userJobId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> SetHfJobId(int userJobId, string hfJobId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<HfUserFireAndForgetJobModel> Update(HfUserFireAndForgetJobModel data)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<HfUserScheduledJobModel> Update(HfUserScheduledJobModel data)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<HfUserRecurringJobModel> Update(HfUserRecurringJobModel data)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<HfUserJobModel> UpdateStatus(int userJobId, JobStatus status)
-        {
-            throw new NotImplementedException();
         }
     }
 }
