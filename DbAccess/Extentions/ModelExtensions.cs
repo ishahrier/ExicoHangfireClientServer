@@ -26,7 +26,8 @@ namespace Exico.HF.DbAccess.Extentions
                 UpdatedOn = data.UpdatedOn,
                 UserId = data.UserId,
                 WorkDataId = data.WorkDataId,
-                WorkerClass = data.WorkerClass
+                WorkerClass = data.WorkerClass,
+                HfJobId = data.HfJobId
             };
         }
 
