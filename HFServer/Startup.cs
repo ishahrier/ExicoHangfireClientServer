@@ -1,18 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Exico.HF.Common.Extentions;
-using Exico.HF.Common.Interfaces;
 using Exico.HF.DbAccess.Extentions;
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
 
 namespace HFServer
 {
@@ -47,7 +42,7 @@ namespace HFServer
 
             //services.AddScoped<IFireAndForgetTask, MyFnFJob>();
             //services.AddScoped<IScheduledTask, MyScheduledJob>();
-            //services.AddScoped<IRecurringTask, MyRecurringJob>();
+            services.AddScoped<ITest, MyClass>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -81,6 +76,25 @@ namespace HFServer
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+        }
+    }
+
+    public interface ITest
+    {
+        void Print();
+    }
+    public class MyClass : ITest
+    {
+        private ILogger<MyClass> logger;
+
+        public MyClass(ILogger<MyClass> logger)
+        {
+            this.logger = logger;
+        }
+
+        public void Print()
+        {
+            Console.WriteLine("My Class");
         }
     }
 }

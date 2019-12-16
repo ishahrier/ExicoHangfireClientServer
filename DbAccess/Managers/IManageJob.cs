@@ -1,6 +1,4 @@
 ﻿using Exico.HF.Common.DomainModels;
-using Exico.HF.Common.Interfaces;
-using Exico.HF.DbAccess.Db.Models;
 using System.Threading.Tasks;
 
 

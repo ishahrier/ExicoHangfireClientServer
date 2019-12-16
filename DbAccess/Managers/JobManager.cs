@@ -1,7 +1,5 @@
 ﻿using Exico.HF.Common.DomainModels;
 using Exico.HF.Common.Enums;
-using Exico.HF.Common.Interfaces;
-using Exico.HF.DbAccess.Db.Models;
 using Exico.HF.DbAccess.Db.Services;
 using Exico.HF.DbAccess.Extentions;
 using Hangfire;
@@ -39,13 +37,13 @@ namespace Exico.HF.DbAccess.Managers
             if (t is HfUserFireAndForgetJobModel)
             {
                 userJob = await _dbService.Create<T>(t);
-                hfJobId = _bgClient.Enqueue<IWork>(x => x.DoWork(userJob.Id, userJob.WorkDataId, JobCancellationToken.Null));
+                hfJobId = _bgClient.Enqueue<IManageWork<T>>(x => x.DoWork(userJob, JobCancellationToken.Null));
             }
             if (t is HfUserScheduledJobModel)
             {
                 userJob = await _dbService.Create<T>(t);
                 var casted = t.CastToScheduledJobModel();
-                hfJobId = _bgClient.Schedule<IWork>(x => x.DoWork(userJob.Id, userJob.WorkDataId, JobCancellationToken.Null),
+                hfJobId = _bgClient.Schedule<IManageWork<T>>(x => x.DoWork(userJob, JobCancellationToken.Null),
                       TimeZoneInfo.ConvertTimeToUtc(casted.ScheduledAt.DateTime.ToUnspecifiedDateTime(),
                       TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId)));
                 await _dbService.SetHfJobId(userJob.Id, hfJobId);
@@ -56,7 +54,7 @@ namespace Exico.HF.DbAccess.Managers
                 userJob = await _dbService.Create<T>(t);
                 var casted = t.CastToRecurringJobModel();
                 _recClient.AddOrUpdate(hfJobId,
-                    Job.FromExpression<IWork>(x => x.DoWork(userJob.Id, userJob.WorkDataId, JobCancellationToken.Null)),
+                    Job.FromExpression<IManageWork<T>>(x => x.DoWork(userJob, JobCancellationToken.Null)),
                      casted.CronExpression,
                     TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId));
                 await _dbService.SetHfJobId(userJob.Id, hfJobId);

@@ -12,4 +12,9 @@
     <PackageReference Include="Hangfire.Core" Version="1.7.8" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extentions\" />
+    <Folder Include="Interfaces\" />
+  </ItemGroup>
+
 </Project>

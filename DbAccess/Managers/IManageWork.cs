@@ -1,6 +1,7 @@
-﻿using Hangfire;
+﻿using Exico.HF.Common.DomainModels;
+using Hangfire;
 
-namespace Exico.HF.Common.Interfaces
+namespace Exico.HF.DbAccess.Managers
 {
     /// <summary>
     /// A 'work' is a definied steps that is needed to be executed.
@@ -11,7 +12,7 @@ namespace Exico.HF.Common.Interfaces
     /// A 'work' is not a UserJob or HangFire job. A UserJob is created to 
     /// schedule a 'Work'
     /// </summary>
-    public interface IWork
+    public interface IManageWork<T> where T:HfUserJobModel
     {
 
         /// <summary>
@@ -20,12 +21,8 @@ namespace Exico.HF.Common.Interfaces
         /// <param name="jobId">User job ID, created by user</param>
         /// <param name="workDataId">Id of the actual work data </param>
         /// <param name="cancellationToken">hangfire cancellation token</param>
-        public void DoWork(int jobId, int? workDataId, IJobCancellationToken cancellationToken);
+        public void DoWork(T t, IJobCancellationToken cancellationToken);
 
-        /// <summary>
-        /// Data table needed by the work to understand WHAT to do , it is can been as INPUTS of a work.
-        /// </summary>
-        /// <returns></returns>
-        public string GetDataTableName();
+
     }
 }

@@ -18,15 +18,37 @@ namespace HFServer.Controllers
         private readonly IManageJob _jm;
         private readonly IExicoHfDbService _service;
 
-        public HomeController(IManageJob jm, IExicoHfDbService service)
+        public IServiceProvider Di { get; }
+        public IManageWork<HfUserRecurringJobModel> Model { get; }
+
+        public HomeController(IManageJob jm, IExicoHfDbService service )
         {
             _jm = jm;
             _service = service;
-   
+ 
         }
         public IActionResult Index()
         {
-           var data =  _service.Create(new HfUserRecurringJobModel()
+
+          // var c =  Di.GetService<ITest>();
+           //var data =  _service.Create(new HfUserRecurringJobModel()
+           // {
+           //     Name = "Tst Fnf",
+           //     Note = "Test Note",
+           //     UserId = "1111",
+           //     WorkerClass = "The Fnf Worker",
+           //     JobType = Exico.HF.Common.Enums.JobType.FireAndForget,
+           //     TimeZoneId = "Central Standard Time",
+           //     Status = Exico.HF.Common.Enums.JobStatus.None,
+           //     CronExpression = "cron"               
+                
+           // }).Result;
+            return View();
+        }
+
+        public async Task<IActionResult> CreateFnF()
+        {
+            var options2 = new HfUserFireAndForgetJobModel()
             {
                 Name = "Tst Fnf",
                 Note = "Test Note",
@@ -35,21 +57,13 @@ namespace HFServer.Controllers
                 JobType = Exico.HF.Common.Enums.JobType.FireAndForget,
                 TimeZoneId = "Central Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
-                CronExpression = "cron"               
-                
-            }).Result;
-            return View();
+                WorkDataId = 10
+            };
+
+            var data = await _jm.Create(options2);
+            return View("Index");
         }
 
-        //public async Task<IActionResult> CreateFnF()
-        //{
-        //    var options2= new FireAndForgetTaskOptions();
-        //    options2.SetTimeZoneId("Central Standard Time");
-        //    options2.SetUserId("1000");
-        //    await _jm.Create(options2, "Fnf", "Fnf note");
-        //    return View("Index");
-        //}
-        
         //public async Task<ActionResult> CreateScheduled(int minAfter=1)
         //{
 
