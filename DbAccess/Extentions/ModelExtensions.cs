@@ -7,50 +7,50 @@ namespace Exico.HF.DbAccess.Extentions
     public static class ModelExtensions
     {
         #region model to db
-        public static HfUserJob ToDbModel(this HfUserFireAndForgetJobModel data)
+        public static HfUserJob ToDbModel(this HfUserFireAndForgetJobModel model)
         {
-            return (data as HfUserJobModel).ToDbModel();
+            return (model as HfUserJobModel).ToDbModel();
         }
 
-        public static HfUserJob ToDbModel(this HfUserJobModel data)
+        public static HfUserJob ToDbModel(this HfUserJobModel model)
         {
             return new HfUserJob()
             {
-                Id = data.Id,
-                JobType = data.JobType,
-                CreatedOn = data.CreatedOn,
-                Name = data.Name,
-                Note = data.Note,
-                Status = data.Status,
-                TimeZoneId = data.TimeZoneId,
-                UpdatedOn = data.UpdatedOn,
-                UserId = data.UserId,
-                WorkDataId = data.WorkDataId,
-                WorkerClass = data.WorkerClass,
-                HfJobId = data.HfJobId
+                Id = model.Id,
+                JobType = model.JobType,
+                CreatedOn = model.CreatedOn,
+                Name = model.Name,
+                Note = model.Note,
+                Status = model.Status,
+                TimeZoneId = model.TimeZoneId,
+                UpdatedOn = model.UpdatedOn,
+                UserId = model.UserId,
+                WorkDataId = model.WorkDataId,
+                WorkerClass = model.WorkerClass,
+                HfJobId = model.HfJobId
             };
         }
 
-        public static HfUserRecurringJob ToDbModel(this HfUserRecurringJobModel data)
+        public static HfUserRecurringJob ToDbModel(this HfUserRecurringJobModel model)
         {
             return new HfUserRecurringJob()
             {
-                Id = data.HfUserRecurringJobModelId,
-                HfUserJob = (data as HfUserJobModel).ToDbModel(),
-                CronExpression = data.CronExpression,
-                LastHfJobId = data.LastHfJobId,
-                LastRun = data.LastRun,
-                NextRun = data.NextRun
+                Id = model.HfUserRecurringJobModelId,
+                HfUserJob = (model as HfUserJobModel).ToDbModel(),
+                CronExpression = model.CronExpression,
+                LastHfJobId = model.LastHfJobId,
+                LastRun = model.LastRun,
+                NextRun = model.NextRun
             };
         }
 
-        public static HfUserScheduledJob ToDbModel(this HfUserScheduledJobModel data)
+        public static HfUserScheduledJob ToDbModel(this HfUserScheduledJobModel model)
         {
             return new HfUserScheduledJob()
             {
-                Id = data.HfUserScheduledJobModelId,
-                ScheduledAt = data.ScheduledAt,
-                HfUserJob = (data as HfUserJobModel).ToDbModel()
+                Id = model.HfUserScheduledJobModelId,
+                ScheduledAt = model.ScheduledAt,
+                HfUserJob = (model as HfUserJobModel).ToDbModel()
             };
         }
         #endregion
@@ -60,7 +60,7 @@ namespace Exico.HF.DbAccess.Extentions
         {
             return new HfUserFireAndForgetJobModel()
             {
-                JobType = data.JobType,
+                //JobType = data.JobType,
                 CreatedOn = data.CreatedOn,
                 Name = data.Name,
                 Note = data.Note,
@@ -79,7 +79,7 @@ namespace Exico.HF.DbAccess.Extentions
         {
             var model = new HfUserRecurringJobModel()
             {
-                JobType = data.HfUserJob.JobType,
+                //JobType = data.HfUserJob.JobType,
                 CreatedOn = data.HfUserJob.CreatedOn,
                 Name = data.HfUserJob.Name,
                 Note = data.HfUserJob.Note,
@@ -104,7 +104,7 @@ namespace Exico.HF.DbAccess.Extentions
         {
             var model = new HfUserScheduledJobModel()
             {
-                JobType = data.HfUserJob.JobType,
+                //JobType = data.HfUserJob.JobType,
                 CreatedOn = data.HfUserJob.CreatedOn,
                 Name = data.HfUserJob.Name,
                 Note = data.HfUserJob.Note,

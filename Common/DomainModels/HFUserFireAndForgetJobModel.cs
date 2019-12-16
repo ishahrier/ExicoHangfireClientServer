@@ -8,6 +8,9 @@ namespace Exico.HF.Common.DomainModels
 {
     public class HfUserFireAndForgetJobModel : HfUserJobModel
     {
-
+        public HfUserFireAndForgetJobModel()
+        {
+            this.JobType = JobType.FireAndForget;
+        }
     }
 }

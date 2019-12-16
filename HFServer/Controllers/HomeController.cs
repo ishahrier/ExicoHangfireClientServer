@@ -53,8 +53,7 @@ namespace HFServer.Controllers
                 Name = "Tst Fnf",
                 Note = "Test Note",
                 UserId = "1111",
-                WorkerClass = "The Fnf Worker",
-                JobType = Exico.HF.Common.Enums.JobType.FireAndForget,
+                WorkerClass = "The Fnf Worker",               
                 TimeZoneId = "Central Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
                 WorkDataId = 10

@@ -6,6 +6,10 @@ namespace Exico.HF.Common.DomainModels
 {
     public class HfUserRecurringJobModel: HfUserJobModel
     {
+        public HfUserRecurringJobModel()
+        {
+            this.JobType = Enums.JobType.Recurring;
+        }
         public int HfUserRecurringJobModelId { get; set; }
         public int? LastHfJobId { get; set; }
         public DateTimeOffset? LastRun { get; set; }

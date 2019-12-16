@@ -19,9 +19,9 @@ namespace Exico.HF.Common.DomainModels
         [Required, MinLength(1)]
         public string Name { get; set; }
         [Required]
-        public JobStatus Status { get; set; }
+        public JobStatus Status { get;  set; }
         [Required]
-        public JobType JobType { get; set; }
+        public JobType JobType { get; protected set; }
         [Required]
         public DateTimeOffset CreatedOn { get; set; }
         public string Note { get; set; }
