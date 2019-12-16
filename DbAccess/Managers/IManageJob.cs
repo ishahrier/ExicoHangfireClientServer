@@ -11,12 +11,9 @@ namespace Exico.HF.DbAccess.Managers
         /// <summary>
         /// Create a user task (FnF, schduled or recurring)
         /// </summary>
-        /// <param name="options"></param>
-        /// <param name="name"></param>
-        /// <param name="note"></param>
-        /// <returns></returns>
-        Task<HfUserJobModel> Create(HfUserJobModel data);
 
+        /// <returns></returns>
+        Task<T> Create<T>(T t) where T : HfUserJobModel;
         /// <summary>
         /// Just stops the current execution. Doesn't delete the task.
         /// </summary>

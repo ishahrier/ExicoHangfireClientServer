@@ -27,5 +27,9 @@ namespace Exico.HF.Common.DomainModels
         public string Note { get; set; }
         public int ? WorkDataId { get; set; }        
         public DateTimeOffset? UpdatedOn { get; set; }
+
+        public string HfJobId { get; set; }
+
+        
     }
 }

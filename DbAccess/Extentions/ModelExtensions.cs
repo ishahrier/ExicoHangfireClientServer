@@ -69,7 +69,8 @@ namespace Exico.HF.DbAccess.Extentions
                 UserId = data.UserId,
                 WorkDataId = data.WorkDataId,
                 WorkerClass = data.WorkerClass,
-                Id = data.Id
+                Id = data.Id,
+                HfJobId = data.HfJobId
             };
         }
 
@@ -93,6 +94,16 @@ namespace Exico.HF.DbAccess.Extentions
         }
         #endregion
 
+        #region base to specific model casting
+        public static T CastToJobModel <T>(this HfUserJobModel data) where T : HfUserJobModel
+        {
+            return data as T;
+        }
+        public static HfUserFireAndForgetJobModel CastToFireAndForgetJobModel(this HfUserJobModel data) => data as HfUserFireAndForgetJobModel;
+        public static HfUserScheduledJobModel CastToScheduledJobModel(this HfUserJobModel data) => data as HfUserScheduledJobModel;
+        public static HfUserRecurringJobModel CastToRecurringJobModel(this HfUserJobModel data) => data as HfUserRecurringJobModel;
+        #endregion
+
         public static bool IsRecurringJob(this HfUserJob record) => record.JobType == JobType.Recurring;
         public static bool IsScheduledJob(this HfUserJob record) => record.JobType == JobType.Scheduled;
         public static bool IsFireAndForgetJob(this HfUserJob record) => record.JobType == JobType.FireAndForget;
@@ -106,6 +117,6 @@ namespace Exico.HF.DbAccess.Extentions
         public static bool IsFireAndForgetOrScheduled(this HfUserJobModel record) => IsScheduledJob(record) || IsFireAndForgetJob(record);
         public static bool IsRecurringOrScheduled(this HfUserJobModel record) => IsScheduledJob(record) || IsFireAndForgetJob(record);
 
-
+        
     }
 }

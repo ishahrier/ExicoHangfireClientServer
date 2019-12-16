@@ -12,24 +12,14 @@ namespace Exico.HF.DbAccess.Db.Services
     public interface IExicoHfDbService : IDisposable
     {
         Task<bool> SetHfJobId(int userJobId, string hfJobId);
-
-
-        Task<HfUserFireAndForgetJobModel> GetFnf(int userJobId);
-        Task<HfUserScheduledJobModel> GetScheduled(int userJobId);
-        Task<HfUserRecurringJobModel> GetRecurring(int userJobId);
-
-
-        Task<HfUserFireAndForgetJobModel> CreateFnf(HfUserFireAndForgetJobModel data);
-        Task<HfUserScheduledJobModel> CreateScheduled(HfUserScheduledJobModel data);
-        Task<HfUserRecurringJobModel> CreateRecurring(HfUserRecurringJobModel data);
-
-        Task<HfUserFireAndForgetJobModel> UpdateFnf(HfUserFireAndForgetJobModel data);
-        Task<HfUserScheduledJobModel> UpdateScheduled(HfUserScheduledJobModel data);
-        Task<HfUserRecurringJobModel> UpdateRecurring(HfUserRecurringJobModel data);
-
+        //Task<HfUserJob> Get(int userJobId);
+        Task<T> Get<T>(int userJobId) where T : HfUserJobModel;
+        Task<HfUserJobModel> GetBase(int userJobId);
+        Task<T> Create<T>(T data) where T : HfUserJobModel;
+        Task<T> Update<T>(T t) where T : HfUserJobModel;
         Task<bool> UpdateStatus(int userJobId, JobStatus status);
-        Task<bool> DeleteFnf(int userJobId);
-        Task<bool> DeleteScheduled(int userJobId);
-        Task<bool> DeleteRecurring(int userJobId);
+        Task<bool> Delete(int userJobId);
+        Task<string> GetHfJobId(int userJobId);
+
     }
 }
