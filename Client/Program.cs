@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Exico.HF.DbAccess.Db.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -15,7 +16,7 @@ namespace Client
         {
             // CreateHostBuilder(args).Build().Run();
 
-
+            
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

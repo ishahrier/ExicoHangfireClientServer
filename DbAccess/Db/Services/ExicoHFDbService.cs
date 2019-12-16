@@ -24,6 +24,7 @@ namespace Exico.HF.DbAccess.Db.Services
         public async Task<T> Create<T>(T data) where T : HfUserJobModel
         {
             T ret = null;
+            data.CreatedOn = DateTimeOffset.Now;
             if (data is HfUserFireAndForgetJobModel)
             {
                 var _ret = await CreateFnf(data.CastToFireAndForgetJobModel());
@@ -46,6 +47,7 @@ namespace Exico.HF.DbAccess.Db.Services
         {
             var dbModel = data.ToDbModel();
             await _dbCtx.HfUserJob.AddAsync(dbModel);
+            await _dbCtx.SaveChangesAsync();
             return (HfUserFireAndForgetJobModel)dbModel.ToDomainModel();
         }
 
@@ -53,6 +55,7 @@ namespace Exico.HF.DbAccess.Db.Services
         {
             var dbModel = data.ToDbModel();
             await _dbCtx.HfUserScheduledJob.AddAsync(dbModel);
+            await _dbCtx.SaveChangesAsync();
             return dbModel.ToDomainModel();
         }
 
@@ -60,6 +63,7 @@ namespace Exico.HF.DbAccess.Db.Services
         {
             var dbModel = data.ToDbModel();
             await _dbCtx.HfUserRecurringJob.AddAsync(dbModel);
+            await _dbCtx.SaveChangesAsync();
             return dbModel.ToDomainModel();
         }
 

@@ -8,20 +8,36 @@ using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using HFServer.Models;
 using Exico.HF.DbAccess.Extentions;
+using Exico.HF.DbAccess.Db.Services;
+using Exico.HF.Common.DomainModels;
 
 namespace HFServer.Controllers
 {
     public class HomeController : Controller
     {
         private readonly IManageJob _jm;
+        private readonly IExicoHfDbService _service;
 
-        public HomeController(IManageJob jm)
+        public HomeController(IManageJob jm, IExicoHfDbService service)
         {
             _jm = jm;
+            _service = service;
    
         }
         public IActionResult Index()
         {
+           var data =  _service.Create(new HfUserRecurringJobModel()
+            {
+                Name = "Tst Fnf",
+                Note = "Test Note",
+                UserId = "1111",
+                WorkerClass = "The Fnf Worker",
+                JobType = Exico.HF.Common.Enums.JobType.FireAndForget,
+                TimeZoneId = "Central Standard Time",
+                Status = Exico.HF.Common.Enums.JobStatus.None,
+                CronExpression = "cron"               
+                
+            }).Result;
             return View();
         }
 

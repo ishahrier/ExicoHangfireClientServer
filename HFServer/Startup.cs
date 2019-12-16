@@ -42,7 +42,7 @@ namespace HFServer
                     DisableGlobalLocks = true
                 }));
             services.AddHangfireServer();
-            services.AddExicoHfExtension();
+          //  services.AddExicoHfExtension();
             services.AddExicoHfExtension(Configuration.GetConnectionString("HangfireConnection"));
 
             //services.AddScoped<IFireAndForgetTask, MyFnFJob>();
