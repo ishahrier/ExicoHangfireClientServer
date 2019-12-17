@@ -92,7 +92,7 @@ namespace Exico.HF.DbAccess.Db.Services
                 ret = _ret.CastToJobModel<T>();
             }
 
-            
+
             return ret;
         }
         private async Task<HfUserFireAndForgetJobModel> GetFnf(int userJobId)
@@ -121,10 +121,29 @@ namespace Exico.HF.DbAccess.Db.Services
             if (record != null) return record.ToDomainModel();
             else return null;
         }
-        public async Task<HfUserJobModel> GetBase(int userJobId) => (await Get(userJobId)).ToDomainModel();
-        private async Task<HfUserJob> Get(int userJobId,bool tracking=false)
+        public async Task<HfUserJobModel> GetBase(int userJobId)
         {
-            var query = tracking ?  _dbCtx.HfUserJob : _dbCtx.HfUserJob.AsNoTracking();     
+            var data = (await Get(userJobId));
+            if (data.IsFireAndForgetJob())
+            {
+                return data.ToDomainModel();
+            }
+            else if (data.IsScheduledJob())
+            {
+                var _data = await Get<HfUserScheduledJobModel>(userJobId);
+                return _data;
+            }
+            else if (data.IsRecurringJob())
+            {
+                var _data = await Get<HfUserRecurringJobModel>(userJobId);
+                return _data;
+            }
+
+            throw new Exception("Invalid job type detected");
+        }
+        private async Task<HfUserJob> Get(int userJobId, bool tracking = false)
+        {
+            var query = tracking ? _dbCtx.HfUserJob : _dbCtx.HfUserJob.AsNoTracking();
             return await query.FirstOrDefaultAsync(x => x.Id == userJobId);
         }
 

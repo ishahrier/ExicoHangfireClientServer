@@ -63,18 +63,43 @@ namespace HFServer.Controllers
             return View("Index");
         }
 
-        //public async Task<ActionResult> CreateScheduled(int minAfter=1)
-        //{
+        public async Task<ActionResult> CreateScheduled(int minAfter = 1)
+        {
+            var options2 = new HfUserScheduledJobModel()
+            {
+                Name = "Tst Fnf",
+                Note = "Test Note",
+                UserId = "1111",
+                WorkerClass = "The Fnf Worker",
+                TimeZoneId = "Central Standard Time",
+                Status = Exico.HF.Common.Enums.JobStatus.None,
+                WorkDataId = 10
+            };
 
-        //    var options = new ScheduledTaskOptions();
-        //    options.SetTimeZoneId("Central Standard Time");
-        //    var now = DateTime.Now.AddSeconds(minAfter*60);
-        //    options.SetScheduledAt(new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, DateTimeKind.Unspecified));
-        //    options.SetUserId("2000");
-        //    await _jm.Create(options, "Scheduled", "Scheduled note");
-        //    return View("Index");
+            var data = await _jm.Create(options2);
+            return View("Index");
 
-        //}
+        }
+
+        public async Task<ActionResult> CreateRecurring()
+        {
+            var options2 = new  HfUserRecurringJobModel()
+            {
+                Name = "Tst Fnf",
+                Note = "Test Note",
+                UserId = "1111",
+                WorkerClass = "The recurring Worker",
+                TimeZoneId = "Central Standard Time",
+                Status = Exico.HF.Common.Enums.JobStatus.None,
+                WorkDataId = 10,
+                CronExpression = Cron.MinuteInterval(2),
+                
+            };
+
+            var data = await _jm.Create(options2);
+            return View("Index");
+
+        }
 
         //public async Task<ActionResult> CreateRecurring()
         //{

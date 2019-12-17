@@ -46,7 +46,6 @@ namespace Exico.HF.DbAccess.Managers
                 hfJobId = _bgClient.Schedule<IManageWork<T>>(x => x.DoWork(userJob, JobCancellationToken.Null),
                       TimeZoneInfo.ConvertTimeToUtc(casted.ScheduledAt.DateTime.ToUnspecifiedDateTime(),
                       TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId)));
-                await _dbService.SetHfJobId(userJob.Id, hfJobId);
             }
             if (t is HfUserRecurringJobModel)
             {
@@ -57,11 +56,9 @@ namespace Exico.HF.DbAccess.Managers
                     Job.FromExpression<IManageWork<T>>(x => x.DoWork(userJob, JobCancellationToken.Null)),
                      casted.CronExpression,
                     TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId));
-                await _dbService.SetHfJobId(userJob.Id, hfJobId);
             }
-
             await _dbService.SetHfJobId(userJob.Id, hfJobId);
-
+            userJob.HfJobId = hfJobId;
             return userJob;
         }
         

@@ -17,5 +17,7 @@ namespace Exico.HF.DbAccess.Db.Services
         Task<bool> Delete(int userJobId);
         Task<string> GetHfJobId(int userJobId);
 
+
+
     }
 }
