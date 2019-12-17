@@ -1,4 +1,5 @@
 ﻿using Exico.HF.Common.DomainModels;
+using Exico.HF.Common.Enums;
 using Hangfire;
 
 namespace Exico.HF.DbAccess.Managers
@@ -12,7 +13,7 @@ namespace Exico.HF.DbAccess.Managers
     /// A 'work' is not a UserJob or HangFire job. A UserJob is created to 
     /// schedule a 'Work'
     /// </summary>
-    public interface IManageWork<T> where T:HfUserJobModel
+    public interface IManageWork
     {
 
         /// <summary>
@@ -21,7 +22,7 @@ namespace Exico.HF.DbAccess.Managers
         /// <param name="jobId">User job ID, created by user</param>
         /// <param name="workDataId">Id of the actual work data </param>
         /// <param name="cancellationToken">hangfire cancellation token</param>
-        public void DoWork(T t, IJobCancellationToken cancellationToken);
+        public void DoWork(int userJobId,  JobType jobType, IJobCancellationToken cancellationToken);
 
 
     }

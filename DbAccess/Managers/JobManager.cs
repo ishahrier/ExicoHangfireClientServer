@@ -37,13 +37,13 @@ namespace Exico.HF.DbAccess.Managers
             if (t is HfUserFireAndForgetJobModel)
             {
                 userJob = await _dbService.Create<T>(t);
-                hfJobId = _bgClient.Enqueue<IManageWork<T>>(x => x.DoWork(userJob, JobCancellationToken.Null));
+                hfJobId = _bgClient.Enqueue<IManageWork>(x => x.DoWork(userJob.Id, userJob.HfJobId, userJob.JobType, JobCancellationToken.Null));
             }
             if (t is HfUserScheduledJobModel)
             {
                 userJob = await _dbService.Create<T>(t);
                 var casted = t.CastToScheduledJobModel();
-                hfJobId = _bgClient.Schedule<IManageWork<T>>(x => x.DoWork(userJob, JobCancellationToken.Null),
+                hfJobId = _bgClient.Schedule<IManageWork>(x => x.DoWork(userJob.Id, userJob.HfJobId, userJob.JobType, JobCancellationToken.Null),
                       TimeZoneInfo.ConvertTimeToUtc(casted.ScheduledAt.DateTime.ToUnspecifiedDateTime(),
                       TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId)));
             }
@@ -53,7 +53,7 @@ namespace Exico.HF.DbAccess.Managers
                 userJob = await _dbService.Create<T>(t);
                 var casted = t.CastToRecurringJobModel();
                 _recClient.AddOrUpdate(hfJobId,
-                    Job.FromExpression<IManageWork<T>>(x => x.DoWork(userJob, JobCancellationToken.Null)),
+                    Job.FromExpression<IManageWork>(x => x.DoWork(userJob.Id, userJob.HfJobId, userJob.JobType, JobCancellationToken.Null)),
                      casted.CronExpression,
                     TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId));
             }
@@ -61,8 +61,8 @@ namespace Exico.HF.DbAccess.Managers
             userJob.HfJobId = hfJobId;
             return userJob;
         }
-        
-        public async Task<bool> Cancel(int id) 
+
+        public async Task<bool> Cancel(int id)
         {
             var record = await _dbService.GetBase(id);
             if (record != null)

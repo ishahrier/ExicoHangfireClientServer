@@ -15,9 +15,10 @@ namespace Exico.HF.DbAccess.Extentions
 
             services.AddDbContext<ExicoHfDbContext>(x => x.UseSqlServer(conString));
             services.AddScoped<IManageJob, JobManager>();
-            services.AddScoped<IExicoHfDbService, ExicoHfDbService>();
-            services.AddScoped(typeof(IManageWork<>),typeof(WorkManager<>));
-            services.AddScoped<MarkerFilter, ExicoHfFilter>();           
+            services.AddScoped<IExicoHfDbService, ExicoHfDbService>();            
+            services.AddScoped<MarkerFilter, ExicoHfFilter>();
+            services.AddScoped<IManageWork, WorkManager>();
+
 
         }
 

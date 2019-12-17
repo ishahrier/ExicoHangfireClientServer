@@ -66,7 +66,7 @@ namespace Exico.HF.DbAccess.Extentions
 
         public void OnStateApplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
         {
-             
+            
             Console.WriteLine(
                 "OnStateApplied(): Job `{0}` state was changed from `{1}` to `{2}`",
                 context.BackgroundJob.Id,

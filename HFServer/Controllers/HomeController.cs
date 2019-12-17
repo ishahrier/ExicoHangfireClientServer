@@ -10,6 +10,7 @@ using HFServer.Models;
 using Exico.HF.DbAccess.Extentions;
 using Exico.HF.DbAccess.Db.Services;
 using Exico.HF.Common.DomainModels;
+using Newtonsoft.Json;
 
 namespace HFServer.Controllers
 {
@@ -19,7 +20,7 @@ namespace HFServer.Controllers
         private readonly IExicoHfDbService _service;
 
         public IServiceProvider Di { get; }
-        public IManageWork<HfUserRecurringJobModel> Model { get; }
+       // public IManageWork<HfUserRecurringJobModel> Model { get; }
 
         public HomeController(IManageJob jm, IExicoHfDbService service )
         {
@@ -30,19 +31,21 @@ namespace HFServer.Controllers
         public IActionResult Index()
         {
 
-          // var c =  Di.GetService<ITest>();
-           //var data =  _service.Create(new HfUserRecurringJobModel()
-           // {
-           //     Name = "Tst Fnf",
-           //     Note = "Test Note",
-           //     UserId = "1111",
-           //     WorkerClass = "The Fnf Worker",
-           //     JobType = Exico.HF.Common.Enums.JobType.FireAndForget,
-           //     TimeZoneId = "Central Standard Time",
-           //     Status = Exico.HF.Common.Enums.JobStatus.None,
-           //     CronExpression = "cron"               
-                
-           // }).Result;
+            var rec = new HfUserRecurringJobModel()
+            {
+                Name = "Tst recurring",
+                Note = "Test Note",
+                UserId = "1111",
+                WorkerClass = "The recurring Worker",
+                TimeZoneId = "Central Standard Time",
+                Status = Exico.HF.Common.Enums.JobStatus.None,
+                WorkDataId = 10,
+                CronExpression = Cron.MinuteInterval(2),
+
+            };
+
+            var data = JsonConvert.SerializeObject(rec);
+ 
             return View();
         }
 
@@ -67,7 +70,7 @@ namespace HFServer.Controllers
         {
             var options2 = new HfUserScheduledJobModel()
             {
-                Name = "Tst Fnf",
+                Name = "Tst schedule",
                 Note = "Test Note",
                 UserId = "1111",
                 WorkerClass = "The Fnf Worker",
@@ -85,7 +88,7 @@ namespace HFServer.Controllers
         {
             var options2 = new  HfUserRecurringJobModel()
             {
-                Name = "Tst Fnf",
+                Name = "Tst recurring",
                 Note = "Test Note",
                 UserId = "1111",
                 WorkerClass = "The recurring Worker",

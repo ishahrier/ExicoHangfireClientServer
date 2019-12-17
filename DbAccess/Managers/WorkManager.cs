@@ -1,4 +1,6 @@
 ﻿using Exico.HF.Common.DomainModels;
+using Exico.HF.Common.Enums;
+using Exico.HF.DbAccess.Db.Services;
 using Hangfire;
 using System;
 using System.Collections.Generic;
@@ -7,34 +9,45 @@ using System.Threading;
 
 namespace Exico.HF.DbAccess.Managers
 {
-    public class WorkManager<T> : IManageWork<T> where T : HfUserJobModel
+    public class WorkManager : IManageWork
     {
+        private IExicoHfDbService _dbCtx;
 
-        public void DoWork(T t, IJobCancellationToken cancellationToken)
+        public WorkManager(IExicoHfDbService db)
         {
-            var workerClassName = t.WorkerClass;
-            var dataTableId = t.WorkDataId;
-            Console.WriteLine($"{t.JobType.ToString() } | UserHfJobId {t.Id} | hfId {t.HfJobId} : [started]");
-            for (int i = 1; i <= 5; i++)
-            {
-                try
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    Console.WriteLine($"#{i}.Worker class name:  {workerClassName} | word data table:{dataTableId}");
-                    Thread.Sleep(5000);
-                }
-                catch (OperationCanceledException ex)
-                {
+            _dbCtx = db;
+        }
+        //public void DoWork(T t, IJobCancellationToken cancellationToken)
+        //{
+        //    var workerClassName = t.WorkerClass;
+        //    var dataTableId = t.WorkDataId;
+        //    Console.WriteLine($"{t.JobType.ToString() } | UserHfJobId {t.Id} | hfId {t.HfJobId} : [started]");
+        //    for (int i = 1; i <= 5; i++)
+        //    {
+        //        try
+        //        {
+        //            cancellationToken.ThrowIfCancellationRequested();
+        //            Console.WriteLine($"#{i}.Worker class name:  {workerClassName} | word data table:{dataTableId}");
+        //            Thread.Sleep(5000);
+        //        }
+        //        catch (OperationCanceledException ex)
+        //        {
 
-                    Console.WriteLine($"{t.JobType.ToString() } | UserHfJobId {t.Id} | hfId {t.HfJobId} : [cancelled]");
+        //            Console.WriteLine($"{t.JobType.ToString() } | UserHfJobId {t.Id} | hfId {t.HfJobId} : [cancelled]");
 
-                    break;
-                }
+        //            break;
+        //        }
 
-            }
+        //    }
 
-            Console.WriteLine($"{t.JobType.ToString() } | UserHfJobId {t.Id} | hfId {t.HfJobId} : [ended]");
+        //    Console.WriteLine($"{t.JobType.ToString() } | UserHfJobId {t.Id} | hfId {t.HfJobId} : [ended]");
 
+        //}
+
+        public void DoWork(int userJobId, JobType jobType, IJobCancellationToken cancellationToken)
+        {
+            var i = _dbCtx.GetHfJobId(userJobId).Result;
+            Console.WriteLine($"{userJobId} -  {jobType}");
         }
     }
 }
