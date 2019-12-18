@@ -1,16 +1,20 @@
 ﻿using System;
+using System.Text.Json.Serialization;
+using Exico.HF.Common.DomainModels;
 using Exico.HF.DbAccess.Db.Services;
 using Hangfire.Client;
 using Hangfire.Common;
 using Hangfire.Server;
 using Hangfire.States;
 using Hangfire.Storage;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Exico.HF.DbAccess.Extentions
 {
     public interface MarkerFilter
     {
-
+        WorkArguments GetWorkArguments(Job job);
     }
     public class ExicoHfFilter :
        JobFilterAttribute,
@@ -21,8 +25,15 @@ namespace Exico.HF.DbAccess.Extentions
         MarkerFilter
     {
 
+
         private readonly IExicoHfDbService _dbService;
-        public ExicoHfFilter(IExicoHfDbService dbService) => _dbService = dbService;
+        public readonly ILogger<ExicoHfFilter> _logger;
+
+        public ExicoHfFilter(IExicoHfDbService dbService,ILogger<ExicoHfFilter> logger)
+        {
+            _dbService = dbService;
+            _logger = logger;
+        }
 
         public void OnCreating(CreatingContext context)
         {
@@ -31,10 +42,6 @@ namespace Exico.HF.DbAccess.Extentions
 
         public void OnCreated(CreatedContext context)
         {
-            Console.WriteLine(
-                "OnCreated() Job that is based on method `{0}` has been created with id `{1}`",
-                context.Job.Method.Name,
-                context.BackgroundJob?.Id);
 
         }
 
@@ -60,6 +67,13 @@ namespace Exico.HF.DbAccess.Extentions
             }
             else
             {
+                if (context.BackgroundJob != null)
+                {
+                    var args = GetWorkArguments(context.BackgroundJob.Job);
+                    var result = _dbService.SetHfJobId(args.UserJobId, context.BackgroundJob.Id).Result;
+                    _logger.LogInformation($"OnCreated: Set HfJobId to {context.BackgroundJob.Id} for user job {args.UserJobId}");
+                }
+
                 Console.WriteLine("OnStateElection(): state selection happened.");
             }
         }
@@ -82,6 +96,10 @@ namespace Exico.HF.DbAccess.Extentions
                 context.OldStateName);
         }
 
-
+        public WorkArguments GetWorkArguments(Job job)
+        {
+            return (WorkArguments) job.Args[0];
+            
+        }
     }
 }

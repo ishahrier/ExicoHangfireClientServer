@@ -14,16 +14,7 @@ namespace Exico.HF.DbAccess.Managers
     /// schedule a 'Work'
     /// </summary>
     public interface IManageWork
-    {
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="jobId">User job ID, created by user</param>
-        /// <param name="workDataId">Id of the actual work data </param>
-        /// <param name="cancellationToken">hangfire cancellation token</param>
-        public void DoWork(int userJobId,  JobType jobType, IJobCancellationToken cancellationToken);
-
-
+    {        
+        public void DoWork(WorkArguments args, IJobCancellationToken cancellationToken);
     }
 }

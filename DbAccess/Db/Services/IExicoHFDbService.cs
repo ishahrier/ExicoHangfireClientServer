@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Exico.HF.DbAccess.Db.Services
 {
-    public interface IExicoHfDbService : IDisposable
+    public interface IExicoHfDbService 
     {
         Task<bool> SetHfJobId(int userJobId, string hfJobId);
         //Task<HfUserJob> Get(int userJobId);

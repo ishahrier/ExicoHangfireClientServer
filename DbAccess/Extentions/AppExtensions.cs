@@ -1,4 +1,5 @@
-﻿using Exico.HF.DbAccess.Db;
+﻿using Exico.HF.Common.DomainModels;
+using Exico.HF.DbAccess.Db;
 using Exico.HF.DbAccess.Db.Services;
 using Exico.HF.DbAccess.Managers;
 using Hangfire;
@@ -18,6 +19,8 @@ namespace Exico.HF.DbAccess.Extentions
             services.AddScoped<IExicoHfDbService, ExicoHfDbService>();            
             services.AddScoped<MarkerFilter, ExicoHfFilter>();
             services.AddScoped<IManageWork, WorkManager>();
+            //services.AddScoped<IWorkArguments, WorkArguments >();
+            services.AddScoped<IGenerateDbContext, GenerateDbContext>();
 
 
         }

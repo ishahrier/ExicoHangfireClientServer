@@ -20,6 +20,7 @@ namespace Exico.HF.DbAccess.Db
 
     public abstract class DesignTimeDbContextFactoryBase<TContext> : IDesignTimeDbContextFactory<TContext> where TContext : DbContext
     {
+        const string CON_STRING_NAME = "HangfireConnection";
         public abstract TContext CreateDbContext(string[] args);
 
         protected virtual string GetEnvironmentName()
@@ -39,7 +40,7 @@ namespace Exico.HF.DbAccess.Db
                 .AddJsonFile($"appsettings.{GetEnvironmentName()}.json", true)
                 .AddEnvironmentVariables();
             var config = builder.Build();
-            var connstr = config.GetConnectionString("Default");
+            var connstr = config.GetConnectionString(CON_STRING_NAME);
             if (string.IsNullOrWhiteSpace(connstr))
             {
                 throw new InvalidOperationException($"Could not find a connection string named Default.");

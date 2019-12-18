@@ -11,12 +11,12 @@ namespace Exico.HF.DbAccess.Db.Services
 {
     public class ExicoHfDbService : IExicoHfDbService
     {
-        private readonly ExicoHfDbContext _dbCtx;
+        private readonly IGenerateDbContext _ctxGenerator;
         private readonly ILogger _logger;
 
-        public ExicoHfDbService(ExicoHfDbContext ctx, ILogger<ExicoHfDbContext> logger)
+        public ExicoHfDbService(IGenerateDbContext ctxGenerator, ILogger<ExicoHfDbContext> logger)
         {
-            _dbCtx = ctx;
+            _ctxGenerator = ctxGenerator;
             _logger = logger;
         }
 
@@ -46,25 +46,35 @@ namespace Exico.HF.DbAccess.Db.Services
         private async Task<HfUserFireAndForgetJobModel> CreateFnf(HfUserFireAndForgetJobModel data)
         {
             var dbModel = data.ToDbModel();
-            await _dbCtx.HfUserJob.AddAsync(dbModel);
-            await _dbCtx.SaveChangesAsync();
-            return (HfUserFireAndForgetJobModel)dbModel.ToDomainModel();
+            using (var db = _ctxGenerator.GenerateNewContext())
+            {
+                await db.HfUserJob.AddAsync(dbModel);
+                await db.SaveChangesAsync();
+                return (HfUserFireAndForgetJobModel)dbModel.ToDomainModel();
+            }
         }
 
         private async Task<HfUserScheduledJobModel> CreateScheduled(HfUserScheduledJobModel data)
         {
-            var dbModel = data.ToDbModel();
-            await _dbCtx.HfUserScheduledJob.AddAsync(dbModel);
-            await _dbCtx.SaveChangesAsync();
-            return dbModel.ToDomainModel();
+            using (var db = _ctxGenerator.GenerateNewContext())
+            {
+                var dbModel = data.ToDbModel();
+                await db.HfUserScheduledJob.AddAsync(dbModel);
+                await db.SaveChangesAsync();
+                return dbModel.ToDomainModel();
+            }
         }
 
         private async Task<HfUserRecurringJobModel> CreateRecurring(HfUserRecurringJobModel data)
         {
-            var dbModel = data.ToDbModel();
-            await _dbCtx.HfUserRecurringJob.AddAsync(dbModel);
-            await _dbCtx.SaveChangesAsync();
-            return dbModel.ToDomainModel();
+
+            using (var db = _ctxGenerator.GenerateNewContext())
+            {
+                var dbModel = data.ToDbModel();
+                await db.HfUserRecurringJob.AddAsync(dbModel);
+                await db.SaveChangesAsync();
+                return dbModel.ToDomainModel();
+            }
         }
 
         #endregion
@@ -104,22 +114,28 @@ namespace Exico.HF.DbAccess.Db.Services
 
         private async Task<HfUserScheduledJobModel> GetScheduled(int userJobId)
         {
-            var record = await _dbCtx.HfUserScheduledJob
+            using (var db = _ctxGenerator.GenerateNewContext())
+            {
+                var record = await db.HfUserScheduledJob
                 .AsNoTracking()
                 .Include(x => x.HfUserJob)
                 .FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
-            if (record != null) return record.ToDomainModel();
-            else return null;
+                if (record != null) return record.ToDomainModel();
+                else return null;
+            }
         }
 
         private async Task<HfUserRecurringJobModel> GetRecurring(int userJobId)
         {
-            var record = await _dbCtx.HfUserRecurringJob
+            using (var db = _ctxGenerator.GenerateNewContext())
+            {
+                var record = await db.HfUserRecurringJob
                 .AsNoTracking()
                 .Include(x => x.HfUserJob)
                 .FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
-            if (record != null) return record.ToDomainModel();
-            else return null;
+                if (record != null) return record.ToDomainModel();
+                else return null;
+            }
         }
         public async Task<HfUserJobModel> GetBase(int userJobId)
         {
@@ -143,8 +159,11 @@ namespace Exico.HF.DbAccess.Db.Services
         }
         private async Task<HfUserJob> Get(int userJobId, bool tracking = false)
         {
-            var query = tracking ? _dbCtx.HfUserJob : _dbCtx.HfUserJob.AsNoTracking();
-            return await query.FirstOrDefaultAsync(x => x.Id == userJobId);
+            using (var db = _ctxGenerator.GenerateNewContext())
+            {
+                var query = tracking ? db.HfUserJob : db.HfUserJob.AsNoTracking();
+                return await query.FirstOrDefaultAsync(x => x.Id == userJobId);
+            }
         }
 
         #endregion
@@ -174,51 +193,57 @@ namespace Exico.HF.DbAccess.Db.Services
         #region Others
         public async Task<bool> SetHfJobId(int userJobId, string hfJobId)
         {
-            var toBeUpdated = await Get(userJobId, true);
-            toBeUpdated.HfJobId = hfJobId;
-            toBeUpdated.UpdatedOn = DateTimeOffset.UtcNow;
-            _dbCtx.Update(toBeUpdated);
-            return await _dbCtx.SaveChangesAsync() > 0;
+            using (var db = _ctxGenerator.GenerateNewContext())
+            {
+                var toBeUpdated = await Get(userJobId, true);
+                toBeUpdated.HfJobId = hfJobId;
+                toBeUpdated.UpdatedOn = DateTimeOffset.UtcNow;
+                db.Update(toBeUpdated);
+                return await db.SaveChangesAsync() > 0;
+            }
         }
 
         public async Task<bool> UpdateStatus(int userJobId, JobStatus status)
         {
             var data = await Get(userJobId, true);
-            data.Status = status;
-            return await _dbCtx.SaveChangesAsync() > 0;
+
+            using (var db = _ctxGenerator.GenerateNewContext())
+            {
+                data.Status = status;
+                return await db.SaveChangesAsync() > 0;
+            }
         }
 
         public async Task<bool> Delete(int userJobId)
         {
             var job = await Get(userJobId, true);
 
-            if (job != null)
+            using (var db = _ctxGenerator.GenerateNewContext())
             {
-                if (job.IsFireAndForgetJob())
+                if (job != null)
                 {
-                    _dbCtx.HfUserJob.Remove(job);
-                }
-                if (job.IsScheduledJob())
-                {
-                    var scheduled = await _dbCtx.HfUserScheduledJob.FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
-                    _dbCtx.HfUserScheduledJob.Remove(scheduled);
-                }
-                if (job.IsRecurringJob())
-                {
-                    var rec = await _dbCtx.HfUserRecurringJob.FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
-                    _dbCtx.HfUserRecurringJob.Remove(rec);
+                    if (job.IsFireAndForgetJob())
+                    {
+                        db.HfUserJob.Remove(job);
+                    }
+                    if (job.IsScheduledJob())
+                    {
+                        var scheduled = await db.HfUserScheduledJob.FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
+                        db.HfUserScheduledJob.Remove(scheduled);
+                    }
+                    if (job.IsRecurringJob())
+                    {
+                        var rec = await db.HfUserRecurringJob.FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
+                        db.HfUserRecurringJob.Remove(rec);
+                    }
+
+                    return await db.SaveChangesAsync() > 0;
                 }
 
-                return await _dbCtx.SaveChangesAsync() > 0;
+                return false;
             }
-
-            return false;
         }
-
-        public void Dispose()
-        {
-            if (_dbCtx != null) _dbCtx.Dispose();
-        }
+ 
 
         public async Task<string> GetHfJobId(int userJobId)
         {

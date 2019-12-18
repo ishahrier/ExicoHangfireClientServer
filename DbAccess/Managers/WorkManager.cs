@@ -11,11 +11,11 @@ namespace Exico.HF.DbAccess.Managers
 {
     public class WorkManager : IManageWork
     {
-        private IExicoHfDbService _dbCtx;
+        private IExicoHfDbService _dbService;
 
-        public WorkManager(IExicoHfDbService db)
+        public WorkManager(IExicoHfDbService dbService)
         {
-            _dbCtx = db;
+            _dbService = dbService;
         }
         //public void DoWork(T t, IJobCancellationToken cancellationToken)
         //{
@@ -44,10 +44,12 @@ namespace Exico.HF.DbAccess.Managers
 
         //}
 
-        public void DoWork(int userJobId, JobType jobType, IJobCancellationToken cancellationToken)
+        public void DoWork(WorkArguments args, IJobCancellationToken cancellationToken)
         {
-            var i = _dbCtx.GetHfJobId(userJobId).Result;
-            Console.WriteLine($"{userJobId} -  {jobType}");
+            var i = _dbService.GetHfJobId(args.UserJobId).Result;
+            Console.WriteLine($"{args.WorkDataId} -  {args.JobType}");
         }
     }
+
+
 }
