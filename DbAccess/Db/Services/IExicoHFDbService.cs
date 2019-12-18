@@ -16,6 +16,7 @@ namespace Exico.HF.DbAccess.Db.Services
         Task<bool> UpdateStatus(int userJobId, JobStatus status);
         Task<bool> Delete(int userJobId);
         Task<string> GetHfJobId(int userJobId);
+         Task<bool> SetRecurringLastRunJobId(int userJobId, string lastRunJobId);
 
 
 

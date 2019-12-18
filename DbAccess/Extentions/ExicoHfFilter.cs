@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 using Exico.HF.Common.DomainModels;
+using Exico.HF.Common.Enums;
 using Exico.HF.DbAccess.Db.Services;
 using Hangfire.Client;
 using Hangfire.Common;
@@ -24,12 +25,12 @@ namespace Exico.HF.DbAccess.Extentions
        IApplyStateFilter,
         MarkerFilter
     {
-
+        private static int i = 1;
 
         private readonly IExicoHfDbService _dbService;
         public readonly ILogger<ExicoHfFilter> _logger;
 
-        public ExicoHfFilter(IExicoHfDbService dbService,ILogger<ExicoHfFilter> logger)
+        public ExicoHfFilter(IExicoHfDbService dbService, ILogger<ExicoHfFilter> logger)
         {
             _dbService = dbService;
             _logger = logger;
@@ -37,69 +38,88 @@ namespace Exico.HF.DbAccess.Extentions
 
         public void OnCreating(CreatingContext context)
         {
-            Console.WriteLine("OnCreating() : Creating a job based on method `{0}`...", context.Job.Method.Name);
+            Console.WriteLine($"OnCreating: {i++}");
         }
 
         public void OnCreated(CreatedContext context)
         {
-
+            Console.WriteLine($"Oncreated: {i++}");
         }
 
         public void OnPerforming(PerformingContext context)
         {
-            Console.WriteLine("OnPerforming() Starting to perform job `{0}`", context.BackgroundJob.Id);
+            Console.WriteLine($"OnPerforming: {i++}");
         }
 
         public void OnPerformed(PerformedContext context)
         {
-            Console.WriteLine("OnPerformed() Job `{0}` has been performed", context.BackgroundJob.Id);
+            Console.WriteLine($"PerformedContext: {i++}");
+
         }
 
         public void OnStateElection(ElectStateContext context)
         {
-            var failedState = context.CandidateState as FailedState;
-            if (failedState != null)
+            Console.WriteLine($"OnStateElection: {i++}");
+            var state = context.CandidateState;
+            if (state.Name == FailedState.StateName)
             {
                 Console.WriteLine(
                     "OnStateElection(): Job `{0}` has been failed due to an exception `{1}`",
                     context.BackgroundJob.Id,
-                    failedState.Exception);
+                    ((FailedState)state).Exception);
             }
             else
             {
                 if (context.BackgroundJob != null)
                 {
                     var args = GetWorkArguments(context.BackgroundJob.Job);
-                    var result = _dbService.SetHfJobId(args.UserJobId, context.BackgroundJob.Id).Result;
-                    _logger.LogInformation($"OnCreated: Set HfJobId to {context.BackgroundJob.Id} for user job {args.UserJobId}");
-                }
 
-                Console.WriteLine("OnStateElection(): state selection happened.");
+                    if (state.Name == EnqueuedState.StateName)
+                    {
+                        if (args.JobType == Common.Enums.JobType.FireAndForget || args.JobType == Common.Enums.JobType.Scheduled)
+                        {
+                            var result = _dbService.SetHfJobId(args.UserJobId, context.BackgroundJob.Id).Result;
+                            _logger.LogInformation($"OnCreated: Set HfJobId to {context.BackgroundJob.Id} for user job {args.UserJobId}");
+                        }
+                        else if (args.JobType == Common.Enums.JobType.Recurring)
+                        {
+                            var result = _dbService.SetRecurringLastRunJobId(args.UserJobId, context.BackgroundJob.Id).Result;
+                            _logger.LogInformation($"OnCreated: Set Rec Last Run Id to {context.BackgroundJob.Id} for user job {args.UserJobId}");
+                        }
+                    }
+                    else if (state.Name == ProcessingState.StateName)
+                        _dbService.UpdateStatus(args.UserJobId, JobStatus.Processing);
+                    else if(state.Name==ScheduledState.StateName )
+                        _dbService.UpdateStatus(args.UserJobId, JobStatus.Scheduled);
+                    else if (state.Name == DeletedState.StateName)
+                        _dbService.UpdateStatus(args.UserJobId, JobStatus.Deleted);
+                    else if (state.Name == FailedState.StateName)
+                        _dbService.UpdateStatus(args.UserJobId, JobStatus.Failed);
+                    else if (state.Name == SucceededState.StateName)
+                        _dbService.UpdateStatus(args.UserJobId, JobStatus.Succeeded);
+
+
+                }
             }
         }
 
         public void OnStateApplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
         {
-            
-            Console.WriteLine(
-                "OnStateApplied(): Job `{0}` state was changed from `{1}` to `{2}`",
-                context.BackgroundJob.Id,
-                context.OldStateName,
-                context.NewState.Name);
+
+            Console.WriteLine($"OnStateApplied: {i++}");
+
         }
 
         public void OnStateUnapplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
         {
-            Console.WriteLine(
-                "OnStateUnapplied() : Job `{0}` state `{1}` was unapplied.",
-                context.BackgroundJob.Id,
-                context.OldStateName);
+            Console.WriteLine($"OnStateUnapplied: {i++}");
+
         }
 
         public WorkArguments GetWorkArguments(Job job)
         {
-            return (WorkArguments) job.Args[0];
-            
+            return (WorkArguments)job.Args[0];
+
         }
     }
 }

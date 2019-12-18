@@ -15,9 +15,12 @@ namespace Exico.HF.Common.Enums
     {
         None=1,
         Enqueued,
-        Running,
+        Processing,
         Cancelled,
-        Deleted
+        Deleted,
+        Scheduled,
+        Failed,
+        Succeeded
     }
  
 }

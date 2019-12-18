@@ -71,8 +71,9 @@ namespace Exico.HF.DbAccess.Managers
                     }, JobCancellationToken.Null)),
                      casted.CronExpression,
                     TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId));
+                await _dbService.SetHfJobId(userJob.Id, hfJobId);
             }
-            await _dbService.SetHfJobId(userJob.Id, hfJobId);
+       
             userJob.HfJobId = hfJobId;
             return userJob;
         }

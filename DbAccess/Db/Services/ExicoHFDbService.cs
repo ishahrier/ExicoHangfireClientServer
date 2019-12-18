@@ -202,6 +202,16 @@ namespace Exico.HF.DbAccess.Db.Services
                 return await db.SaveChangesAsync() > 0;
             }
         }
+        public async Task<bool> SetRecurringLastRunJobId(int userJobId, string lastRunJobId)
+        {
+            using (var db = _ctxGenerator.GenerateNewContext())
+            {
+                var toBeUpdated = await db.HfUserRecurringJob.Include(x=>x.HfUserJob).FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
+                toBeUpdated.LastHfJobId = lastRunJobId;                
+                db.Update(toBeUpdated);
+                return await db.SaveChangesAsync() > 0;
+            }
+        }
 
         public async Task<bool> UpdateStatus(int userJobId, JobStatus status)
         {

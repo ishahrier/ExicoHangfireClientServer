@@ -13,7 +13,7 @@ namespace Exico.HF.DbAccess.Db
     {
         public ExicoHfDbContext GenerateNewContext()
         {
-            ExicoHfDbFactory factory = new ExicoHfDbFactory();
+            ExicoHfDbFactory factory = new ExicoHfDbFactory(false);
             return factory.CreateDbContext(null);
         }
     }

@@ -31,7 +31,7 @@ namespace Exico.HF.DbAccess.Db.Models
     {
         public int Id { get; set; }
         public int HfUserJobId { get; set; }
-        public int? LastHfJobId { get; set; }
+        public string LastHfJobId { get; set; }
         public DateTimeOffset? LastRun { get; set; }
         public DateTimeOffset? NextRun { get; set; }
         public string CronExpression { get; set; }

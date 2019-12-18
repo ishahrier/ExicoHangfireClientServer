@@ -74,9 +74,10 @@ namespace HFServer.Controllers
                 Note = "Test Note",
                 UserId = "1111",
                 WorkerClass = "The Fnf Worker",
-                TimeZoneId = "Central Standard Time",
+                TimeZoneId = "Eastern Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
-                WorkDataId = 10
+                WorkDataId = 10,
+                ScheduledAt = DateTimeOffset.Now.AddMinutes(minAfter)
             };
 
             var data = await _jm.Create(options2);
@@ -92,7 +93,7 @@ namespace HFServer.Controllers
                 Note = "Test Note",
                 UserId = "1111",
                 WorkerClass = "The recurring Worker",
-                TimeZoneId = "Central Standard Time",
+                TimeZoneId = "Eastern Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
                 WorkDataId = 10,
                 CronExpression = Cron.MinuteInterval(2),

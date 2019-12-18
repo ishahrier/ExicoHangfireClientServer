@@ -12,6 +12,14 @@ namespace Exico.HF.DbAccess.Db
 
     public class ExicoHfDbFactory : DesignTimeDbContextFactoryBase<ExicoHfDbContext>
     {
+        public ExicoHfDbFactory() : base()
+        {
+            
+        }
+        public ExicoHfDbFactory(bool verbose):base(verbose)
+        {
+
+        }
         public override ExicoHfDbContext CreateDbContext(string[] args)
         {
             return new ExicoHfDbContext(GetDbContextOptions());
@@ -20,7 +28,19 @@ namespace Exico.HF.DbAccess.Db
 
     public abstract class DesignTimeDbContextFactoryBase<TContext> : IDesignTimeDbContextFactory<TContext> where TContext : DbContext
     {
+        public DesignTimeDbContextFactoryBase() : base()
+        {
+            this.Verbose = true;
+        }
+
+        public DesignTimeDbContextFactoryBase(bool verbose = true) : base()
+        {
+            this.Verbose = verbose;
+        }
+
         const string CON_STRING_NAME = "HangfireConnection";
+        protected readonly bool Verbose;
+
         public abstract TContext CreateDbContext(string[] args);
 
         protected virtual string GetEnvironmentName()
@@ -52,12 +72,18 @@ namespace Exico.HF.DbAccess.Db
         {
             var connectionString = GetConnectionString();
             var optionsBuilder = new DbContextOptionsBuilder<TContext>();
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("Using the following DB connection:");
-            Console.ForegroundColor = ConsoleColor.Green;
+            if (Verbose)
+            {
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("Using the following DB connection:");
+                Console.ForegroundColor = ConsoleColor.Green;
+            }
             var connStringParts = connectionString.Split(';').Select(t => t.Split(new char[] { '=' }, 2)).ToDictionary(t => t[0].Trim(), t => t[1].Trim(), StringComparer.InvariantCultureIgnoreCase);
-            connStringParts.Keys.ToList().ForEach(x => Console.WriteLine($"{x} : {connStringParts[x]}"));
-            Console.ResetColor();
+            if (Verbose)
+            {
+                connStringParts.Keys.ToList().ForEach(x => Console.WriteLine($"{x} : {connStringParts[x]}"));
+                Console.ResetColor();
+            }
             optionsBuilder.UseSqlServer(connectionString);
             optionsBuilder = ConfigureOptionBuilder(optionsBuilder);
             var options = optionsBuilder.Options;

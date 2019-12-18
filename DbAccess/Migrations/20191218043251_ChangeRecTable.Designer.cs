@@ -4,14 +4,16 @@ using Exico.HF.DbAccess.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Exico.HF.DbAccess.Migrations
 {
     [DbContext(typeof(ExicoHfDbContext))]
-    partial class ExicoHfDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191218043251_ChangeRecTable")]
+    partial class ChangeRecTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
