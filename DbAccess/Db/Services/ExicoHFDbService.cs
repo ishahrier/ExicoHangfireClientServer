@@ -219,6 +219,7 @@ namespace Exico.HF.DbAccess.Db.Services
 
             using (var db = _ctxGenerator.GenerateNewContext())
             {
+                db.HfUserJob.Attach(data);
                 data.Status = status;
                 return await db.SaveChangesAsync() > 0;
             }
