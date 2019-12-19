@@ -213,10 +213,20 @@ namespace Exico.HF.DbAccess.Db.Services
             }
         }
 
+        public async Task<bool> UpdateRecurringNextRun(int userJobId, DateTime nextRun)
+        {
+            using(var db = _ctxGenerator.GenerateNewContext())
+            {
+                var toBeUpdated = await db.HfUserRecurringJob.Include(x => x.HfUserJob).FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
+                toBeUpdated.NextRun = nextRun;
+                db.Update(toBeUpdated);
+                return await db.SaveChangesAsync() > 0;
+            }
+        }
+
         public async Task<bool> UpdateStatus(int userJobId, JobStatus status)
         {
             var data = await Get(userJobId, true);
-
             using (var db = _ctxGenerator.GenerateNewContext())
             {
                 db.HfUserJob.Attach(data);
@@ -263,6 +273,12 @@ namespace Exico.HF.DbAccess.Db.Services
             return null;
         }
 
+        public Task<bool> UpdateStatus(int userJobId, JobStatus status, string hfJobId)
+        {
+            throw new NotImplementedException();
+        }
+
+ 
 
         #endregion
 

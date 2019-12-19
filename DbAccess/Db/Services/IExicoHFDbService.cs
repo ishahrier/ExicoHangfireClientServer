@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Exico.HF.DbAccess.Db.Services
 {
-    public interface IExicoHfDbService 
+    public interface IExicoHfDbService
     {
         Task<bool> SetHfJobId(int userJobId, string hfJobId);
         //Task<HfUserJob> Get(int userJobId);
@@ -13,11 +13,11 @@ namespace Exico.HF.DbAccess.Db.Services
         Task<HfUserJobModel> GetBase(int userJobId);
         Task<T> Create<T>(T data) where T : HfUserJobModel;
         Task<T> Update<T>(T t) where T : HfUserJobModel;
-        Task<bool> UpdateStatus(int userJobId, JobStatus status);
+        Task<bool> UpdateStatus(int userJobId, JobStatus status, string hfJobId);
         Task<bool> Delete(int userJobId);
         Task<string> GetHfJobId(int userJobId);
-         Task<bool> SetRecurringLastRunJobId(int userJobId, string lastRunJobId);
-
+        Task<bool> SetRecurringLastRunJobId(int userJobId, string lastRunJobId);
+        Task<bool> UpdateRecurringNextRun(int userJobId,  DateTime nextRun);
 
 
     }

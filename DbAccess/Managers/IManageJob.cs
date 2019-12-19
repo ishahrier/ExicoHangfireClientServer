@@ -32,5 +32,7 @@ namespace Exico.HF.DbAccess.Managers
         /// <param name="id">Task id of the user task , not HF job id</param>
         /// <returns></returns>
         Task RunNow(int id);
+
+        
     }
 }
