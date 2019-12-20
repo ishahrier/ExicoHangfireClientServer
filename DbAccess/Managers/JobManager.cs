@@ -33,22 +33,24 @@ namespace Exico.HF.DbAccess.Managers
         public async Task<T> Create<T>(T t) where T : HfUserJobModel
         {
             T userJob = null;
-            string hfJobId = string.Empty;
+
             if (t is HfUserFireAndForgetJobModel)
             {
                 userJob = await _dbService.Create<T>(t);
-                hfJobId = _bgClient.Enqueue<IManageWork>(x => x.DoWork(new WorkArguments()
+                _bgClient.Enqueue<IManageWork>(x => x.DoWork(new WorkArguments()
                 {
                     JobType = userJob.JobType,
                     UserJobId = userJob.Id,
                     WorkDataId = userJob.WorkDataId
                 }, JobCancellationToken.Null));
+                //job id should not be saved here, because it is run immidiately after creating
+                // so there is a chance that the job will look for the id in the db before it is saved.
             }
             if (t is HfUserScheduledJobModel)
             {
                 userJob = await _dbService.Create<T>(t);
                 var casted = t.CastToScheduledJobModel();
-                hfJobId = _bgClient.Schedule<IManageWork>(x => x.DoWork(new WorkArguments()
+                _bgClient.Schedule<IManageWork>(x => x.DoWork(new WorkArguments()
                 {
                     JobType = userJob.JobType,
                     UserJobId = userJob.Id,
@@ -56,10 +58,11 @@ namespace Exico.HF.DbAccess.Managers
                 }, JobCancellationToken.Null),
                       TimeZoneInfo.ConvertTimeToUtc(casted.ScheduledAt.DateTime.ToUnspecifiedDateTime(),
                       TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId)));
+                //job id should not be saved here,  because if the delay is too short then the case might be similar to the above one.
             }
             if (t is HfUserRecurringJobModel)
             {
-                hfJobId = Guid.NewGuid().ToString();
+                var hfJobId = Guid.NewGuid().ToString();
                 userJob = await _dbService.Create<T>(t);
                 var casted = t.CastToRecurringJobModel();
                 _recClient.AddOrUpdate(hfJobId,
@@ -72,9 +75,10 @@ namespace Exico.HF.DbAccess.Managers
                      casted.CronExpression,
                     TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId));
                 await _dbService.SetHfJobId(userJob.Id, hfJobId);
+                userJob.HfJobId = hfJobId;
             }
-       
-            userJob.HfJobId = hfJobId;
+
+            
             return userJob;
         }
 
@@ -83,7 +87,7 @@ namespace Exico.HF.DbAccess.Managers
             var record = await _dbService.GetBase(id);
             if (record != null)
             {
-                await _dbService.UpdateStatus(record.Id, JobStatus.Cancelled,null);
+                await _dbService.UpdateStatus(record.Id, JobStatus.Cancelled, null);
 
                 if (record.IsFireAndForgetOrScheduled())
                     _bgClient.Delete(record.HfJobId);
@@ -97,7 +101,7 @@ namespace Exico.HF.DbAccess.Managers
                     if (job != null)
                         _bgClient.Delete(job.LastJobId);
                 }
-                
+
                 return true;
             }
 

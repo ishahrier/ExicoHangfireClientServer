@@ -64,9 +64,11 @@ namespace Exico.HF.DbAccess.Managers
                     else if (state.Name == ScheduledState.StateName)
                         status = JobStatus.Scheduled;
                     else if (state.Name == DeletedState.StateName)
-                        status =  JobStatus.Deleted; 
+                    {
+                        return;
+                    }
                     else if (state.Name == SucceededState.StateName)
-                        status =  JobStatus.Succeeded;
+                        status = JobStatus.Succeeded;
 
                     _dbService.UpdateStatus(args.UserJobId, status, context.BackgroundJob.Id);
                 }
