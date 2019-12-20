@@ -83,6 +83,8 @@ namespace Exico.HF.DbAccess.Managers
             var record = await _dbService.GetBase(id);
             if (record != null)
             {
+                await _dbService.UpdateStatus(record.Id, JobStatus.Cancelled,null);
+
                 if (record.IsFireAndForgetOrScheduled())
                     _bgClient.Delete(record.HfJobId);
                 else
@@ -95,7 +97,7 @@ namespace Exico.HF.DbAccess.Managers
                     if (job != null)
                         _bgClient.Delete(job.LastJobId);
                 }
-                await _dbService.UpdateStatus(record.Id, JobStatus.Cancelled);
+                
                 return true;
             }
 

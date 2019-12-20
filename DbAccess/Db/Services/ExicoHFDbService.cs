@@ -5,6 +5,7 @@ using Exico.HF.DbAccess.Extentions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Exico.HF.DbAccess.Db.Services
@@ -224,17 +225,6 @@ namespace Exico.HF.DbAccess.Db.Services
             }
         }
 
-        public async Task<bool> UpdateStatus(int userJobId, JobStatus status)
-        {
-            var data = await Get(userJobId, true);
-            using (var db = _ctxGenerator.GenerateNewContext())
-            {
-                db.HfUserJob.Attach(data);
-                data.Status = status;
-                return await db.SaveChangesAsync() > 0;
-            }
-        }
-
         public async Task<bool> Delete(int userJobId)
         {
             var job = await Get(userJobId, true);
@@ -265,7 +255,6 @@ namespace Exico.HF.DbAccess.Db.Services
             }
         }
  
-
         public async Task<string> GetHfJobId(int userJobId)
         {
             var job = await Get(userJobId, false);
@@ -273,12 +262,27 @@ namespace Exico.HF.DbAccess.Db.Services
             return null;
         }
 
-        public Task<bool> UpdateStatus(int userJobId, JobStatus status, string hfJobId)
+        public async Task<bool> UpdateStatus(int userJobId, JobStatus status, string hfJobId)
         {
-            throw new NotImplementedException();
-        }
+            var data = await Get(userJobId, true);
+            using (var db = _ctxGenerator.GenerateNewContext())
+            {
+                if (data.IsFireAndForgetOrScheduled())
+                {
+                    db.HfUserJob.Attach(data);
+                    data.Status = status;
+                    return await db.SaveChangesAsync() > 0;
+                }
+                 if (data.IsRecurringJob())
+                {
+                    var recData = db.HfUserRecurringJob.Where(x => x.HfUserJobId == userJobId).FirstOrDefault();
+                    recData.LastHfJobId = hfJobId;
+                    return await db.SaveChangesAsync() > 0;
 
- 
+                }
+                return false;
+            }
+        } 
 
         #endregion
 

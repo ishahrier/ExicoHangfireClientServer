@@ -21,6 +21,8 @@ namespace Exico.HF.DbAccess.Extentions
             services.AddScoped<IManageWork, WorkManager>();
             //services.AddScoped<IWorkArguments, WorkArguments >();
             services.AddScoped<IGenerateDbContext, GenerateDbContext>();
+            services.AddScoped<ILifeCyleHandler, LifeCycleHandler>();
+
 
 
         }
