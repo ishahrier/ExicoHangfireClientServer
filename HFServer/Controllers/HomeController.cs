@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Exico.HF.Common.DomainModels;
+using Exico.HF.DbAccess.Db.Services;
 using Exico.HF.DbAccess.Managers;
 using Hangfire;
-using Microsoft.AspNetCore.Mvc;
 using HFServer.Models;
-using Exico.HF.DbAccess.Extentions;
-using Exico.HF.DbAccess.Db.Services;
-using Exico.HF.Common.DomainModels;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace HFServer.Controllers
 {

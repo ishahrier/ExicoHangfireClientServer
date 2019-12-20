@@ -87,7 +87,7 @@ namespace Exico.HF.DbAccess.Managers
             var record = await _dbService.GetBase(id);
             if (record != null)
             {
-                await _dbService.UpdateStatus(record.Id, JobStatus.Cancelled, null);
+                //await _dbService.UpdateStatus(record.Id, JobStatus.Cancelled, null);
 
                 if (record.IsFireAndForgetOrScheduled())
                     _bgClient.Delete(record.HfJobId);
@@ -140,7 +140,13 @@ namespace Exico.HF.DbAccess.Managers
             if (record.IsRecurringJob())
                 _recClient.Trigger(record.HfJobId);
             else if (record.IsFireAndForgetOrScheduled())
-                _bgClient.ChangeState(record.HfJobId, new EnqueuedState());
+            {
+                if (record.HfJobId != null)                
+                    _bgClient.ChangeState(record.HfJobId, new EnqueuedState());                
+                else                
+                    throw new Exception("HFJob ID cannot be null");
+                
+            }
             else
                 throw new Exception("Invalid job type detected.");
         }

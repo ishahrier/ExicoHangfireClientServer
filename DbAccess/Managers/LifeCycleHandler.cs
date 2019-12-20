@@ -7,10 +7,7 @@ using Hangfire.Server;
 using Hangfire.States;
 using Hangfire.Storage;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Exico.HF.DbAccess.Managers
 {
@@ -44,31 +41,26 @@ namespace Exico.HF.DbAccess.Managers
 
         public void HandleOnStateElection(ElectStateContext context)
         {
-            
+
             var state = context.CandidateState;
             var args = GetWorkArguments(context.BackgroundJob.Job);
-            if (state.Name == FailedState.StateName)
-            {
-                _dbService.UpdateStatus(args.UserJobId, JobStatus.Failed,null).Wait();
-            }
+            if (state.Name == FailedState.StateName)            
+                _dbService.UpdateStatus(args.UserJobId, JobStatus.Failed, null).Wait();            
             else
             {
                 if (context.BackgroundJob != null)
-                {                    
+                {
                     JobStatus status = JobStatus.None;
-
                     if (state.Name == EnqueuedState.StateName)
                         status = JobStatus.Enqueued;
                     else if (state.Name == ProcessingState.StateName)
                         status = JobStatus.Processing;
                     else if (state.Name == ScheduledState.StateName)
                         status = JobStatus.Scheduled;
-                    else if (state.Name == DeletedState.StateName)
-                    {
-                        return;
-                    }
                     else if (state.Name == SucceededState.StateName)
                         status = JobStatus.Succeeded;
+                    else if (state.Name == DeletedState.StateName)
+                        status = JobStatus.Cancelled;
 
                     _dbService.UpdateStatus(args.UserJobId, status, context.BackgroundJob.Id);
                 }

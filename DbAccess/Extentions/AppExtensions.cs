@@ -1,5 +1,4 @@
-﻿using Exico.HF.Common.DomainModels;
-using Exico.HF.DbAccess.Db;
+﻿using Exico.HF.DbAccess.Db;
 using Exico.HF.DbAccess.Db.Services;
 using Exico.HF.DbAccess.Managers;
 using Hangfire;

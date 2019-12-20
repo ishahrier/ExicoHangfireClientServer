@@ -277,6 +277,7 @@ namespace Exico.HF.DbAccess.Db.Services
                  if (data.IsRecurringJob())
                 {
                     var recData = db.HfUserRecurringJob.Where(x => x.HfUserJobId == userJobId).FirstOrDefault();
+                    recData.HfUserJob.Status = status;
                     recData.LastHfJobId = hfJobId;
                     return await db.SaveChangesAsync() > 0;
 
