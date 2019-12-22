@@ -278,6 +278,7 @@ namespace Exico.HF.DbAccess.Db.Services
                     db.HfUserJob.Attach(data);
                     data.Status = status;
                     data.HfJobId = hfJobId;
+                    data.UpdatedOn = DateTimeOffset.Now;
                     return await db.SaveChangesAsync() > 0;
                 }
                 if (data.IsRecurringJob())
