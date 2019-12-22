@@ -22,6 +22,7 @@ namespace Exico.HF.DbAccess.Db.Services
         /// <summary>
         /// Returns common base data for any kind of job. Use this when you need to know only the base information
         /// and you do not know what type of job it is and also do not care about the job type.
+        /// In othercases you can use <seealso cref="Get{T}(int)"/>
         /// </summary>
         /// <param name="userJobId"></param>
         /// <returns>Returns <seealso cref="HfUserJobModel"/></returns>
