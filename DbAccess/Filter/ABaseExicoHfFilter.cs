@@ -1,4 +1,5 @@
 ﻿using Exico.HF.Common.DomainModels;
+using Exico.HF.DbAccess.Extentions;
 using Exico.HF.DbAccess.Managers;
 using Hangfire.Client;
 using Hangfire.Common;
@@ -7,25 +8,17 @@ using Hangfire.States;
 using Hangfire.Storage;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Exico.HF.DbAccess.Extentions
+namespace Exico.HF.DbAccess.Filter
 {
-    public interface IExicoFilter :
-       IClientFilter,
-       IServerFilter,
-       IElectStateFilter,
-       IApplyStateFilter
+    public abstract class ABaseExicoHfFilter : JobFilterAttribute, IExicoHfFilter
     {
-        void OnPerformed(PerformedContext context);
-    }
-
-    public abstract class ABaseHfFilter : JobFilterAttribute, IExicoFilter
-    {
-        private ABaseHfFilter() { }
-        protected readonly ILogger<ExicoHfFilter> _logger;
+        private ABaseExicoHfFilter() { }
+        protected readonly ILogger<DefaultExicoHfFilter> _logger;
         protected readonly ILifeCyleHandler _lifeCycleHandler;
-        public ABaseHfFilter(ILifeCyleHandler lifeCYcleHandler, ILogger<ExicoHfFilter> logger)
+        public ABaseExicoHfFilter(ILifeCyleHandler lifeCYcleHandler, ILogger<DefaultExicoHfFilter> logger)
         {
             _lifeCycleHandler = lifeCYcleHandler;
             _logger = logger;
@@ -47,20 +40,4 @@ namespace Exico.HF.DbAccess.Extentions
         public virtual void OnStateUnapplied(ApplyStateContext context, IWriteOnlyTransaction transaction) { }
     }
 
-    public class ExicoHfFilter : ABaseHfFilter
-    {
-        public ExicoHfFilter(ILifeCyleHandler lifeCYcleHandler, ILogger<ExicoHfFilter> logger) :
-            base(lifeCYcleHandler, logger)
-        { }
-
-        public override void OnPerformed(PerformedContext context)
-        {
-            var result = _lifeCycleHandler.HandleOnPerformed(context).Result;
-        }
-
-        public override void OnStateElection(ElectStateContext context)
-        {
-            var result = _lifeCycleHandler.HandleOnStateElection(context).Result;
-        }
-    }
 }
