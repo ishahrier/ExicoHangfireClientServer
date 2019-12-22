@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 
 namespace Exico.HF.DbAccess.Managers
 {
+    /// <summary>
+    /// Manages background jobs, it is a bridge between HFJob and UserJob
+    /// </summary>
     public class JobManager : IManageJob
     {
         private readonly IExicoHfDbService _dbService;
