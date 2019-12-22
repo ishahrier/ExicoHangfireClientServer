@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Serilog;
+using Serilog.Events;
+using System;
 
 namespace HFServer
 {
@@ -7,15 +10,37 @@ namespace HFServer
     {
         public static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()           
+                            .MinimumLevel.Debug()
+                            .MinimumLevel.Override("Hangfire", LogEventLevel.Warning)
+                            .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
+                            .WriteTo.Console()
+                            .CreateLogger();
+
+            try
+            {
+                Log.Information("Starting up");
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Application start-up failed");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
             CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+            .UseSerilog()
             .UseDefaultServiceProvider(options => options.ValidateScopes = false)
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();
+
             });
     }
 

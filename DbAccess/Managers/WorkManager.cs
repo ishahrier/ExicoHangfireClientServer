@@ -18,7 +18,7 @@ namespace Exico.HF.DbAccess.Managers
         private readonly IServiceProvider _provider;
         private readonly ILogger _logger;
 
-        public WorkManager(IExicoHfDbService dbService,IServiceProvider provider,ILogger logger)
+        public WorkManager(IExicoHfDbService dbService,IServiceProvider provider,ILogger<WorkManager> logger)
         {
             _dbService = dbService;
             _provider = provider;
@@ -30,13 +30,17 @@ namespace Exico.HF.DbAccess.Managers
         {
             try
             {
+                _logger.LogInformation("Trying to create worker instance using {@data}", args);
                 var wType = Type.GetType(args.GetFullQualifiedWokerClassName());
                 var wObj = (IWorker) ActivatorUtilities.CreateInstance(_provider,wType);
+                _logger.LogInformation("Now executing worker {@data}", args);
                 var ret = await wObj.DoWorkAsync(args, cancellationToken);
+                _logger.LogInformation("Finished executing worker. Return value is {value}", ret);
                 return ret ;
             }
             catch (Exception ex)
             {
+                _logger.LogError("Unhandled exception for worker {@data}", args);
                 return false;
             }
         }

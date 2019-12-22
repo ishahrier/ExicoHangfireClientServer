@@ -6,7 +6,9 @@ using Hangfire;
 using HFServer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Serilog;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -16,20 +18,24 @@ namespace HFServer.Controllers
     public class HomeController : Controller
     {
         private readonly IManageJob _jm;
+        private readonly ILogger<HomeController> _logger;
         private readonly IExicoHfDbService _service;
         private readonly IServiceProvider proider;
 
         public IServiceProvider Di { get; }
        // public IManageWork<HfUserRecurringJobModel> Model { get; }
 
-        public HomeController(IManageJob jm, IExicoHfDbService service, IServiceProvider proider )
+        public HomeController(IManageJob jm, ILogger<HomeController> logger, IExicoHfDbService service, IServiceProvider proider )
         {
             _jm = jm;
+            this._logger = logger;
             _service = service;
             this.proider = proider;
         }
         public IActionResult Index()
         {
+            _logger.LogInformation("helllo");
+            _logger.LogError("helllo");
 
             //var rec = new HfUserRecurringJobModel()
             //{
@@ -48,7 +54,7 @@ namespace HFServer.Controllers
 
             //var t = Type.GetType("Exico.HF.Common.Interfaces.DownloadAllProducts, Exico.HF.Common");
             //var obj = (IWorker)ActivatorUtilities.CreateInstance(this.proider, t);
- 
+
             return View();
         }
 
@@ -77,7 +83,8 @@ namespace HFServer.Controllers
                 Name = "Tst schedule",
                 Note = "Test Note",
                 UserId = "1111",
-                WorkerClassName = "The Fnf Worker",
+                WorkerClassName = "Exico.HF.Common.Interfaces.DownloadAllProducts",
+                WorkerAssemblyName = "Exico.HF.Common",
                 TimeZoneId = "Eastern Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
                 WorkDataId = 10,
@@ -96,7 +103,8 @@ namespace HFServer.Controllers
                 Name = "Tst recurring",
                 Note = "Test Note",
                 UserId = "1111",
-                WorkerClassName = "The recurring Worker",
+                WorkerClassName = "Exico.HF.Common.Interfaces.DownloadAllProducts",
+                WorkerAssemblyName = "Exico.HF.Common",
                 TimeZoneId = "Eastern Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
                 WorkDataId = 10,

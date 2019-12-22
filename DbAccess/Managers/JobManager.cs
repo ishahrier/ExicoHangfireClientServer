@@ -39,13 +39,13 @@ namespace Exico.HF.DbAccess.Managers
             
             if (t is HfUserFireAndForgetJobModel)
             {
-                userJob = await _dbService.Create<T>(t);                 
+                userJob = await _dbService.Create<T>(t);
                 _bgClient.Enqueue<IManageWork>(x => x.ExecuteWorkerAsync(userJob.ToWorkArguments(), JobCancellationToken.Null));
             }
 
             if (t is HfUserScheduledJobModel)
             {
-                userJob = await _dbService.Create<T>(t);                
+                userJob = await _dbService.Create<T>(t);
                 var casted = t.CastToScheduledJobModel();
                 _bgClient.Schedule<IManageWork>(x => x.ExecuteWorkerAsync(userJob.ToWorkArguments(), JobCancellationToken.Null),
                       TimeZoneInfo.ConvertTimeToUtc(casted.ScheduledAt.DateTime.ToUnspecifiedDateTime(),
@@ -54,8 +54,9 @@ namespace Exico.HF.DbAccess.Managers
 
             if (t is HfUserRecurringJobModel)
             {
+                _logger.LogInformation("Create recurring job {@data}", t);
                 var initialRecJobId = Guid.NewGuid();
-                userJob = await _dbService.Create<T>(t);              
+                userJob = await _dbService.Create<T>(t);
                 var casted = t.CastToRecurringJobModel();
                 _recClient.AddOrUpdate(initialRecJobId.ToString(),
                     Job.FromExpression<IManageWork>(x => x.ExecuteWorkerAsync(userJob.ToWorkArguments(), JobCancellationToken.Null)),
