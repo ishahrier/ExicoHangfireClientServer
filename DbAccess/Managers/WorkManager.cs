@@ -20,7 +20,7 @@ namespace Exico.HF.DbAccess.Managers
         }
 
  
-        public async Task<bool> ExecWorker(WorkArguments args, IJobCancellationToken cancellationToken)
+        public async Task<bool> ExecuteWorker(WorkArguments args, IJobCancellationToken cancellationToken)
         {
             try
             {

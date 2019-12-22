@@ -44,7 +44,7 @@ namespace Exico.HF.DbAccess.Managers
             {
                 userJob = await _dbService.Create<T>(t);
                 workArgs.UserJobId = userJob.Id;
-                _bgClient.Enqueue<IManageWork>(x => x.ExecWorker(workArgs, JobCancellationToken.Null));
+                _bgClient.Enqueue<IManageWork>(x => x.ExecuteWorker(workArgs, JobCancellationToken.Null));
                 //job id should not be saved here, because it is run immidiately after creating
                 // so there is a chance that the job will look for the id in the db before it is saved.
             }
@@ -53,7 +53,7 @@ namespace Exico.HF.DbAccess.Managers
                 userJob = await _dbService.Create<T>(t);
                 workArgs.UserJobId = userJob.Id;
                 var casted = t.CastToScheduledJobModel();
-                _bgClient.Schedule<IManageWork>(x => x.ExecWorker(workArgs, JobCancellationToken.Null),
+                _bgClient.Schedule<IManageWork>(x => x.ExecuteWorker(workArgs, JobCancellationToken.Null),
                       TimeZoneInfo.ConvertTimeToUtc(casted.ScheduledAt.DateTime.ToUnspecifiedDateTime(),
                       TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId)));
                 //job id should not be saved here,  because if the delay is too short then the case might be similar to the above one.
@@ -65,7 +65,7 @@ namespace Exico.HF.DbAccess.Managers
                 workArgs.UserJobId = userJob.Id;
                 var casted = t.CastToRecurringJobModel();
                 _recClient.AddOrUpdate(hfJobId,
-                    Job.FromExpression<IManageWork>(x => x.ExecWorker(workArgs, JobCancellationToken.Null)),
+                    Job.FromExpression<IManageWork>(x => x.ExecuteWorker(workArgs, JobCancellationToken.Null)),
                      casted.CronExpression,
                     TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId));
                 await _dbService.SetHfJobId(userJob.Id, hfJobId);
