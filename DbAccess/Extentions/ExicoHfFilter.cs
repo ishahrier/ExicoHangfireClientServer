@@ -11,70 +11,56 @@ using System.Threading.Tasks;
 
 namespace Exico.HF.DbAccess.Extentions
 {
-    public interface MarkerFilter
-    {
-
-    }
-    public class ExicoHfFilter :
-       JobFilterAttribute,
+    public interface IExicoFilter :
        IClientFilter,
        IServerFilter,
        IElectStateFilter,
-       IApplyStateFilter,
-        MarkerFilter
+       IApplyStateFilter
     {
-        private static int i = 1;
+        void OnPerformed(PerformedContext context);
+    }
 
-
-        private readonly ILogger<ExicoHfFilter> _logger;
-        private readonly ILifeCyleHandler _lifeCycleHandler;
-
-        public ExicoHfFilter(ILifeCyleHandler lifeCYcleHandler, ILogger<ExicoHfFilter> logger)
+    public abstract class ABaseHfFilter : JobFilterAttribute, IExicoFilter
+    {
+        private ABaseHfFilter() { }
+        protected readonly ILogger<ExicoHfFilter> _logger;
+        protected readonly ILifeCyleHandler _lifeCycleHandler;
+        public ABaseHfFilter(ILifeCyleHandler lifeCYcleHandler, ILogger<ExicoHfFilter> logger)
         {
             _lifeCycleHandler = lifeCYcleHandler;
             _logger = logger;
         }
+        protected WorkArguments GetWorkArguments(Job job) => (WorkArguments)job.Args[0];
 
-        public void OnCreating(CreatingContext context)
+        public virtual void OnCreating(CreatingContext filterContext) { }
+
+        public virtual void OnCreated(CreatedContext filterContext) { }
+
+        public virtual void OnPerforming(PerformingContext filterContext) { }
+
+        public virtual void OnPerformed(PerformedContext filterContext) { }
+
+        public virtual void OnStateElection(ElectStateContext context) { }
+
+        public virtual void OnStateApplied(ApplyStateContext context, IWriteOnlyTransaction transaction) { }
+
+        public virtual void OnStateUnapplied(ApplyStateContext context, IWriteOnlyTransaction transaction) { }
+    }
+
+    public class ExicoHfFilter : ABaseHfFilter
+    {
+        public ExicoHfFilter(ILifeCyleHandler lifeCYcleHandler, ILogger<ExicoHfFilter> logger) :
+            base(lifeCYcleHandler, logger)
+        { }
+
+        public override void OnPerformed(PerformedContext context)
         {
-            Console.WriteLine($"OnCreating: {i++}");
+            var result = _lifeCycleHandler.HandleOnPerformed(context).Result;
         }
 
-        public void OnCreated(CreatedContext context)
+        public override void OnStateElection(ElectStateContext context)
         {
-            Console.WriteLine($"Oncreated: {i++}");
-        }
-
-        public void OnPerforming(PerformingContext context)
-        {
-            Console.WriteLine($"OnPerforming: {i++}");
-        }
-
-        public void OnPerformed(PerformedContext context)
-        {
-            Console.WriteLine($"PerformedContext: {i++}");
-            var result = _lifeCycleHandler.HandleOnPerformed(context);
-        }
-
-        public void OnStateElection(ElectStateContext context)
-        {
-            Console.WriteLine($"OnStateElection: {i++}");
             var result = _lifeCycleHandler.HandleOnStateElection(context).Result;
-        }
-
-        public void OnStateApplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
-        {
-            Console.WriteLine($"OnStateApplied: {i++}");
-        }
-
-        public void OnStateUnapplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
-        {
-            Console.WriteLine($"OnStateUnapplied: {i++}");
-        }
-
-        protected WorkArguments GetWorkArguments(Job job)
-        {
-            return (WorkArguments)job.Args[0];
         }
     }
 }

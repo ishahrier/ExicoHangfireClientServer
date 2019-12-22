@@ -28,7 +28,8 @@ namespace Exico.HF.DbAccess.Extentions
                 WorkDataId = model.WorkDataId,
                 WorkerClassName = model.WorkerClassName,
                 WorkerAssemblyName = model.WorkerAssemblyName,
-                HfJobId = model.HfJobId
+                HfJobId = model.HfJobId,
+                
             };
         }
 

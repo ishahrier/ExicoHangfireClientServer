@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace Exico.HF.DbAccess.Managers
 {
+ 
     public class LifeCycleHandler : ILifeCyleHandler
     {
         private readonly IExicoHfDbService _dbService;

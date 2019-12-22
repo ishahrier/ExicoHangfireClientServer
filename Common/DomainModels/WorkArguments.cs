@@ -15,6 +15,7 @@ namespace Exico.HF.Common.DomainModels
         public JobType JobType { get; set; }
         public string WorkerClassName { get; set; }
         public string WorkerAssemlyName { get; set; }
+        public string Name { get; set; }
 
         
         public string GetFullQualifiedWokerClassName() => $"{this.WorkerClassName}, {this.WorkerAssemlyName}";

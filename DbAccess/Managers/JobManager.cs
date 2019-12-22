@@ -29,24 +29,27 @@ namespace Exico.HF.DbAccess.Managers
             _recClient = hfRecClient;
             _logger = logger;
         }
-
+        private WorkArguments CreateWorkArguments<T>(T t) where T : HfUserJobModel
+        {
+            return
+            new WorkArguments()
+            {
+                JobType = t.JobType,
+                WorkDataId = t.WorkDataId,
+                WorkerClassName = t.WorkerClassName,
+                WorkerAssemlyName = t.WorkerAssemblyName,
+                Name = t.Name
+            };
+        }
         public async Task<T> Create<T>(T t) where T : HfUserJobModel
         {
             T userJob = null;
-            var workArgs = new WorkArguments()
-            {
-                JobType = t.JobType,                
-                WorkDataId = t.WorkDataId,
-                WorkerClassName = t.WorkerClassName,
-                WorkerAssemlyName = t.WorkerAssemblyName               
-            };
+            var workArgs = CreateWorkArguments(t);
             if (t is HfUserFireAndForgetJobModel)
             {
                 userJob = await _dbService.Create<T>(t);
                 workArgs.UserJobId = userJob.Id;
                 _bgClient.Enqueue<IManageWork>(x => x.ExecuteWorker(workArgs, JobCancellationToken.Null));
-                //job id should not be saved here, because it is run immidiately after creating
-                // so there is a chance that the job will look for the id in the db before it is saved.
             }
             if (t is HfUserScheduledJobModel)
             {
@@ -56,7 +59,6 @@ namespace Exico.HF.DbAccess.Managers
                 _bgClient.Schedule<IManageWork>(x => x.ExecuteWorker(workArgs, JobCancellationToken.Null),
                       TimeZoneInfo.ConvertTimeToUtc(casted.ScheduledAt.DateTime.ToUnspecifiedDateTime(),
                       TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId)));
-                //job id should not be saved here,  because if the delay is too short then the case might be similar to the above one.
             }
             if (t is HfUserRecurringJobModel)
             {
@@ -69,7 +71,7 @@ namespace Exico.HF.DbAccess.Managers
                      casted.CronExpression,
                     TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId));
                 await _dbService.SetHfJobId(userJob.Id, hfJobId);
-                userJob.HfJobId = hfJobId;
+                userJob.HfJobId = hfJobId; //Because we created the ID, so we know it.
             }
             return userJob;
         }

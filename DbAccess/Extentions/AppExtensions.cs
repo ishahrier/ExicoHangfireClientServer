@@ -16,7 +16,7 @@ namespace Exico.HF.DbAccess.Extentions
             services.AddDbContext<ExicoHfDbContext>(x => x.UseSqlServer(conString));
             services.AddScoped<IManageJob, JobManager>();
             services.AddScoped<IExicoHfDbService, ExicoHfDbService>();            
-            services.AddScoped<MarkerFilter, ExicoHfFilter>();
+            services.AddScoped<IExicoFilter, ExicoHfFilter>();
             services.AddScoped<IManageWork, WorkManager>();
             //services.AddScoped<IWorkArguments, WorkArguments >();
             services.AddScoped<IGenerateDbContext, GenerateDbContext>();
@@ -28,7 +28,7 @@ namespace Exico.HF.DbAccess.Extentions
 
         public static void UseExicoHfExtension (this IApplicationBuilder app)
         {
-            GlobalJobFilters.Filters.Add(app.ApplicationServices.GetRequiredService<MarkerFilter>());
+            GlobalJobFilters.Filters.Add(app.ApplicationServices.GetRequiredService<IExicoFilter>());
         }
     }
 }
