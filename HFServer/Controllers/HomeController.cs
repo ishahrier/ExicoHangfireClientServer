@@ -85,7 +85,7 @@ namespace HFServer.Controllers
                 WorkerAssemblyName = "Exico.HF.Common",
                 TimeZoneId = "Eastern Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
-                WorkDataId = 10,
+                WorkDataId = 11,
                 ScheduledAt = DateTimeOffset.Now.AddMinutes(minAfter)
             };
 
@@ -105,7 +105,7 @@ namespace HFServer.Controllers
                 WorkerAssemblyName = "Exico.HF.Common",
                 TimeZoneId = "Eastern Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
-                WorkDataId = 10,
+                WorkDataId = 12,
                 CronExpression = Cron.MinuteInterval(2),
                 
             };
