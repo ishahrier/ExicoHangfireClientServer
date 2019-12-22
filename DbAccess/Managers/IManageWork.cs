@@ -15,6 +15,6 @@ namespace Exico.HF.DbAccess.Managers
     /// </summary>
     public interface IManageWork
     {        
-        public void DoWork(WorkArguments args, IJobCancellationToken cancellationToken);
+        public void ExecWorker(WorkArguments args, IJobCancellationToken cancellationToken);
     }
 }

@@ -12,5 +12,6 @@ namespace Exico.HF.Common.DomainModels
         public int UserJobId { get; set; }
         public int? WorkDataId { get; set; }
         public JobType JobType { get; set; }
+        public string WorkerClass { get; set; }
     }
 }
