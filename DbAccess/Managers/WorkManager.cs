@@ -19,11 +19,7 @@ namespace Exico.HF.DbAccess.Managers
             _provider = provider;
         }
 
-        private T GetObject<T> (T  type) where T: Type
-        {
-            return ActivatorUtilities.CreateInstance<T>(this._provider);
-        }
-
+ 
         public void ExecWorker(WorkArguments args, IJobCancellationToken cancellationToken)
         {
             try
