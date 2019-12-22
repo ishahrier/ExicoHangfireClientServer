@@ -1,6 +1,7 @@
 ﻿using Exico.HF.Common.DomainModels;
 using Exico.HF.Common.Enums;
 using Hangfire;
+using System.Threading.Tasks;
 
 namespace Exico.HF.DbAccess.Managers
 {
@@ -15,6 +16,6 @@ namespace Exico.HF.DbAccess.Managers
     /// </summary>
     public interface IManageWork
     {        
-        public void ExecWorker(WorkArguments args, IJobCancellationToken cancellationToken);
+        public Task<bool> ExecWorker(WorkArguments args, IJobCancellationToken cancellationToken);
     }
 }

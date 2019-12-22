@@ -5,12 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Exico.HF.Common.Interfaces
 {
     public interface  IWorker
     {
-        void  DoWork(WorkArguments args, IJobCancellationToken token);
+        Task<bool>  DoWork(WorkArguments args, IJobCancellationToken token);
     }
 
     public class DownloadAllProducts : IWorker
@@ -21,15 +22,17 @@ namespace Exico.HF.Common.Interfaces
         {
             this.logger = logger;
         }
-        public void DoWork(WorkArguments args , IJobCancellationToken token)
+        public async Task<bool> DoWork(WorkArguments args , IJobCancellationToken token)
         {
+            var ret = false;
             try
             {
                 for (int i = 0; i < 10; i++)
                 {
                     token.ThrowIfCancellationRequested();
                     this.logger.LogInformation("this is from download all product worker");
-                    Thread.Sleep(5000);
+                    await Task.Delay( 5000);
+                    ret = true;
                 }
             }
             catch (Exception)
@@ -38,6 +41,7 @@ namespace Exico.HF.Common.Interfaces
             }
 
             logger.LogInformation("Job ended.");
+            return ret;
         }
     }
 }

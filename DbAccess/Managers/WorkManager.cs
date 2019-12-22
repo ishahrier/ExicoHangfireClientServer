@@ -4,7 +4,7 @@ using Exico.HF.DbAccess.Db.Services;
 using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace Exico.HF.DbAccess.Managers
 {
@@ -20,18 +20,19 @@ namespace Exico.HF.DbAccess.Managers
         }
 
  
-        public void ExecWorker(WorkArguments args, IJobCancellationToken cancellationToken)
+        public async Task<bool> ExecWorker(WorkArguments args, IJobCancellationToken cancellationToken)
         {
             try
             {
                 var wType = Type.GetType(args.GetFullQualifiedWokerClassName());
                 var wObj = (IWorker) ActivatorUtilities.CreateInstance(_provider,wType);
-                wObj.DoWork(args, cancellationToken);
+                var ret = await wObj.DoWork(args, cancellationToken);
+                return ret ;
 
             }
             catch (Exception ex)
             {
-                return;
+                return false;
             }
         }
     }
