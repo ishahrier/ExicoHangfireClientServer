@@ -33,14 +33,14 @@ namespace Exico.HF.DbAccess.Managers
                 _logger.LogInformation("Trying to create worker instance using {@data}", args);
                 var wType = Type.GetType(args.GetFullQualifiedWokerClassName());
                 var wObj = (IWorker) ActivatorUtilities.CreateInstance(_provider,wType);
-                _logger.LogInformation("Now executing worker {@data}", args);
+                _logger.LogInformation(new EventId(1,"WorkerManager"), "Now executing worker/userJobId {}", args.UserJobId);
                 var ret = await wObj.DoWorkAsync(args, cancellationToken);
-                _logger.LogInformation("Finished executing worker. Return value is {value}", ret);
+                _logger.LogInformation("Finished executing worker/userJobId {id}. Return value is {value}",args.UserJobId, ret);
                 return ret ;
             }
             catch (Exception ex)
             {
-                _logger.LogError("Unhandled exception for worker {@data}", args);
+                _logger.LogError(ex,"Unhandled exception for worker {@data}", args);
                 return false;
             }
         }

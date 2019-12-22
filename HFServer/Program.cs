@@ -14,7 +14,7 @@ namespace HFServer
                             .MinimumLevel.Debug()
                             .MinimumLevel.Override("Hangfire", LogEventLevel.Warning)
                             .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
-                            .WriteTo.Console()
+                            .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3} {SourceContext}] {Message:lj}{NewLine}{Exception}")
                             .CreateLogger();
 
             try

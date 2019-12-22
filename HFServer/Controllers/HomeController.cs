@@ -34,9 +34,7 @@ namespace HFServer.Controllers
         }
         public IActionResult Index()
         {
-            _logger.LogInformation("helllo");
-            _logger.LogError("helllo");
-
+ 
             //var rec = new HfUserRecurringJobModel()
             //{
             //    Name = "Tst recurring",
