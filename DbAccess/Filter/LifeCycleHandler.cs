@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Exico.HF.DbAccess.Managers
+namespace Exico.HF.DbAccess.Filter
 {
  
     public class LifeCycleHandler : ILifeCyleHandler

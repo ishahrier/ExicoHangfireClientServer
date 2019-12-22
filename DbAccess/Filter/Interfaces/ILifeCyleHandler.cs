@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Exico.HF.DbAccess.Managers
+namespace Exico.HF.DbAccess.Filter
 {
     public interface ILifeCyleHandler
     {
