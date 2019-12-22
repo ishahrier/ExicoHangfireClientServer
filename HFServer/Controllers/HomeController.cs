@@ -46,9 +46,9 @@ namespace HFServer.Controllers
 
             //var data = JsonConvert.SerializeObject(rec);
 
-            var t = Type.GetType("Exico.HF.Common.Interfaces.DownloadAllProducts, Exico.HF.Common");
-            var obj = (IWorker)ActivatorUtilities.CreateInstance(this.proider, t);
-            obj.DoWork(0, null);
+            //var t = Type.GetType("Exico.HF.Common.Interfaces.DownloadAllProducts, Exico.HF.Common");
+            //var obj = (IWorker)ActivatorUtilities.CreateInstance(this.proider, t);
+ 
             return View();
         }
 
@@ -59,7 +59,8 @@ namespace HFServer.Controllers
                 Name = "Tst Fnf",
                 Note = "Test Note",
                 UserId = "1111",
-                WorkerClassName = "The Fnf Worker",               
+                WorkerClassName = "Exico.HF.Common.Interfaces.DownloadAllProducts",   
+                WorkerAssemblyName = "Exico.HF.Common",
                 TimeZoneId = "Central Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
                 WorkDataId = 10

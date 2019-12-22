@@ -3,12 +3,13 @@ using Hangfire.States;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Exico.HF.DbAccess.Managers
 {
     public interface ILifeCyleHandler
     {
-        void HandleOnStateElection(ElectStateContext ctx);
-        void HandleOnPerformed(PerformedContext ctx);
+        Task<bool> HandleOnStateElection(ElectStateContext ctx);
+        Task<bool> HandleOnPerformed(PerformedContext ctx);
     }
 }

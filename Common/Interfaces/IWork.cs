@@ -4,12 +4,13 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace Exico.HF.Common.Interfaces
 {
     public interface  IWorker
     {
-        string DoWork(WorkArguments args, IJobCancellationToken token);
+        void  DoWork(WorkArguments args, IJobCancellationToken token);
     }
 
     public class DownloadAllProducts : IWorker
@@ -20,10 +21,23 @@ namespace Exico.HF.Common.Interfaces
         {
             this.logger = logger;
         }
-        public string DoWork(WorkArguments args , IJobCancellationToken token)
+        public void DoWork(WorkArguments args , IJobCancellationToken token)
         {
-            this.logger.LogWarning("this is from download all product worker");
-            return "this is from download all product worker";
+            try
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    token.ThrowIfCancellationRequested();
+                    this.logger.LogInformation("this is from download all product worker");
+                    Thread.Sleep(5000);
+                }
+            }
+            catch (Exception)
+            {
+                logger.LogWarning("Job cancelled");                
+            }
+
+            logger.LogInformation("Job ended.");
         }
     }
 }

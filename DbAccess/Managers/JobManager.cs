@@ -35,14 +35,15 @@ namespace Exico.HF.DbAccess.Managers
             T userJob = null;
             var workArgs = new WorkArguments()
             {
-                JobType = t.JobType,
-                UserJobId = t.Id,
+                JobType = t.JobType,                
                 WorkDataId = t.WorkDataId,
-                WorkerClass = t.WorkerClassName
+                WorkerClassName = t.WorkerClassName,
+                WorkerAssemlyName = t.WorkerAssemblyName               
             };
             if (t is HfUserFireAndForgetJobModel)
             {
                 userJob = await _dbService.Create<T>(t);
+                workArgs.UserJobId = userJob.Id;
                 _bgClient.Enqueue<IManageWork>(x => x.ExecWorker(workArgs, JobCancellationToken.Null));
                 //job id should not be saved here, because it is run immidiately after creating
                 // so there is a chance that the job will look for the id in the db before it is saved.
@@ -50,6 +51,7 @@ namespace Exico.HF.DbAccess.Managers
             if (t is HfUserScheduledJobModel)
             {
                 userJob = await _dbService.Create<T>(t);
+                workArgs.UserJobId = userJob.Id;
                 var casted = t.CastToScheduledJobModel();
                 _bgClient.Schedule<IManageWork>(x => x.ExecWorker(workArgs, JobCancellationToken.Null),
                       TimeZoneInfo.ConvertTimeToUtc(casted.ScheduledAt.DateTime.ToUnspecifiedDateTime(),
@@ -60,6 +62,7 @@ namespace Exico.HF.DbAccess.Managers
             {
                 var hfJobId = Guid.NewGuid().ToString();
                 userJob = await _dbService.Create<T>(t);
+                workArgs.UserJobId = userJob.Id;
                 var casted = t.CastToRecurringJobModel();
                 _recClient.AddOrUpdate(hfJobId,
                     Job.FromExpression<IManageWork>(x => x.ExecWorker(workArgs, JobCancellationToken.Null)),

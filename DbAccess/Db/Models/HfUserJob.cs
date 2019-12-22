@@ -38,7 +38,6 @@ namespace Exico.HF.DbAccess.Db.Models
         public string CronExpression { get; set; }
         public HfUserJob HfUserJob { get; set; }
 
-
     }
 
     public class HfUserScheduledJob

@@ -8,6 +8,7 @@ using Hangfire.States;
 using Hangfire.Storage;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Exico.HF.DbAccess.Managers
 {
@@ -21,31 +22,32 @@ namespace Exico.HF.DbAccess.Managers
             this._dbService = dbService;
             this._logger = logger;
         }
-        public void HandleOnPerformed(PerformedContext ctx)
+        public async Task<bool> HandleOnPerformed(PerformedContext ctx)
         {
             var args = GetWorkArguments(ctx.BackgroundJob.Job);
             if (args.JobType == JobType.Recurring)
             {
-                var hfJobId = _dbService.GetHfJobId(args.UserJobId).Result;
+                var hfJobId = await _dbService.GetHfJobId(args.UserJobId);
                 using (var connection = JobStorage.Current.GetConnection())
                 {
                     var work = connection.GetRecurringJobs().FirstOrDefault(p => p.Id == hfJobId);
                     if (work != null)
                     {
                         var nextRun = work.NextExecution;
-                        _dbService.UpdateRecurringNextRun(args.UserJobId, nextRun.Value).Wait();
+                        return await _dbService.UpdateRecurringNextRun(args.UserJobId, nextRun.Value);
                     }
                 }
             }
+            return false;
         }
 
-        public void HandleOnStateElection(ElectStateContext context)
+        public async Task<bool> HandleOnStateElection(ElectStateContext context)
         {
 
             var state = context.CandidateState;
             var args = GetWorkArguments(context.BackgroundJob.Job);
-            if (state.Name == FailedState.StateName)            
-                _dbService.UpdateStatus(args.UserJobId, JobStatus.Failed, null).Wait();            
+            if (state.Name == FailedState.StateName)
+                return await _dbService.UpdateStatus(args.UserJobId, JobStatus.Failed, null);
             else
             {
                 if (context.BackgroundJob != null)
@@ -62,9 +64,10 @@ namespace Exico.HF.DbAccess.Managers
                     else if (state.Name == DeletedState.StateName)
                         status = JobStatus.Cancelled;
 
-                    _dbService.UpdateStatus(args.UserJobId, status, context.BackgroundJob.Id);
+                    return await _dbService.UpdateStatus(args.UserJobId, status, context.BackgroundJob.Id);
                 }
             }
+            return false;
         }
 
         protected WorkArguments GetWorkArguments(Job job)

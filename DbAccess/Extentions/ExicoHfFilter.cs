@@ -7,12 +7,13 @@ using Hangfire.States;
 using Hangfire.Storage;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
 
 namespace Exico.HF.DbAccess.Extentions
 {
     public interface MarkerFilter
     {
-       
+
     }
     public class ExicoHfFilter :
        JobFilterAttribute,
@@ -24,8 +25,8 @@ namespace Exico.HF.DbAccess.Extentions
     {
         private static int i = 1;
 
- 
-        private  readonly ILogger<ExicoHfFilter> _logger;
+
+        private readonly ILogger<ExicoHfFilter> _logger;
         private readonly ILifeCyleHandler _lifeCycleHandler;
 
         public ExicoHfFilter(ILifeCyleHandler lifeCYcleHandler, ILogger<ExicoHfFilter> logger)
@@ -52,13 +53,13 @@ namespace Exico.HF.DbAccess.Extentions
         public void OnPerformed(PerformedContext context)
         {
             Console.WriteLine($"PerformedContext: {i++}");
-            this._lifeCycleHandler.HandleOnPerformed(context);
+            var result = _lifeCycleHandler.HandleOnPerformed(context);
         }
 
         public void OnStateElection(ElectStateContext context)
         {
             Console.WriteLine($"OnStateElection: {i++}");
-            this._lifeCycleHandler.HandleOnStateElection(context);
+            var result = _lifeCycleHandler.HandleOnStateElection(context).Result;
         }
 
         public void OnStateApplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
