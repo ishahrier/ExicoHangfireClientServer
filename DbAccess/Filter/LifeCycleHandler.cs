@@ -28,10 +28,10 @@ namespace Exico.HF.DbAccess.Filter
             var args = GetWorkArguments(ctx.BackgroundJob.Job);
             if (args.JobType == JobType.Recurring)
             {
-                var hfJobId = await _dbService.GetHfJobId(args.UserJobId);
+                var hfJobId = await _dbService.GetRecurringInitialHfJobId(args.UserJobId);
                 using (var connection = JobStorage.Current.GetConnection())
                 {
-                    var work = connection.GetRecurringJobs().FirstOrDefault(p => p.Id == hfJobId);
+                    var work = connection.GetRecurringJobs().FirstOrDefault(p => p.Id == hfJobId.ToString());
                     if (work != null)
                     {
                         var nextRun = work.NextExecution;
@@ -48,7 +48,7 @@ namespace Exico.HF.DbAccess.Filter
             var state = context.CandidateState;
             var args = GetWorkArguments(context.BackgroundJob.Job);
             if (state.Name == FailedState.StateName)
-                return await _dbService.UpdateStatus(args.UserJobId, JobStatus.Failed, null);
+                return await _dbService.UpdateStatusBgJobId(args.UserJobId, JobStatus.Failed, null);
             else
             {
                 if (context.BackgroundJob != null)
@@ -65,7 +65,7 @@ namespace Exico.HF.DbAccess.Filter
                     else if (state.Name == DeletedState.StateName)
                         status = JobStatus.Cancelled;
 
-                    return await _dbService.UpdateStatus(args.UserJobId, status, context.BackgroundJob.Id);
+                    return await _dbService.UpdateStatusBgJobId(args.UserJobId, status, context.BackgroundJob.Id);
                 }
             }
             return false;

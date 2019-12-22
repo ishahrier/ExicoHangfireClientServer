@@ -106,6 +106,7 @@ namespace Exico.HF.DbAccess.Db.Services
 
             return ret;
         }
+
         private async Task<HfUserFireAndForgetJobModel> GetFnf(int userJobId)
         {
             var record = await Get(userJobId);
@@ -138,8 +139,9 @@ namespace Exico.HF.DbAccess.Db.Services
                 else return null;
             }
         }
-        public async Task<HfUserJobModel> GetBase(int userJobId)
-        {
+
+        public async Task<HfUserJobModel> GetBaseData(int userJobId)
+        {            
             var data = (await Get(userJobId));
             if (data.IsFireAndForgetJob())
             {
@@ -156,8 +158,9 @@ namespace Exico.HF.DbAccess.Db.Services
                 return _data;
             }
 
-            throw new Exception("Invalid job type detected");
+            throw new Exception("Cannot get base data, invalid job type detected.");
         }
+
         private async Task<HfUserJob> Get(int userJobId, bool tracking = false)
         {
             using (var db = _ctxGenerator.GenerateNewContext())
@@ -192,23 +195,25 @@ namespace Exico.HF.DbAccess.Db.Services
         #endregion
 
         #region Others
-        public async Task<bool> SetHfJobId(int userJobId, string hfJobId)
+
+        public async Task<bool> SetRecurringJobInitialHfId(int userJobId, Guid id)
         {
             using (var db = _ctxGenerator.GenerateNewContext())
             {
                 var toBeUpdated = await Get(userJobId, true);
-                toBeUpdated.HfJobId = hfJobId;
+                toBeUpdated.HfJobId = id.ToString();
                 toBeUpdated.UpdatedOn = DateTimeOffset.UtcNow;
                 db.Update(toBeUpdated);
                 return await db.SaveChangesAsync() > 0;
             }
         }
+
         public async Task<bool> SetRecurringLastRunJobId(int userJobId, string lastRunJobId)
         {
             using (var db = _ctxGenerator.GenerateNewContext())
             {
-                var toBeUpdated = await db.HfUserRecurringJob.Include(x=>x.HfUserJob).FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
-                toBeUpdated.LastHfJobId = lastRunJobId;                
+                var toBeUpdated = await db.HfUserRecurringJob.Include(x => x.HfUserJob).FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
+                toBeUpdated.LastHfJobId = lastRunJobId;
                 db.Update(toBeUpdated);
                 return await db.SaveChangesAsync() > 0;
             }
@@ -216,7 +221,7 @@ namespace Exico.HF.DbAccess.Db.Services
 
         public async Task<bool> UpdateRecurringNextRun(int userJobId, DateTime nextRun)
         {
-            using(var db = _ctxGenerator.GenerateNewContext())
+            using (var db = _ctxGenerator.GenerateNewContext())
             {
                 var toBeUpdated = await db.HfUserRecurringJob.Include(x => x.HfUserJob).FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
                 toBeUpdated.NextRun = nextRun;
@@ -254,15 +259,16 @@ namespace Exico.HF.DbAccess.Db.Services
                 return false;
             }
         }
- 
-        public async Task<string> GetHfJobId(int userJobId)
+
+        public async Task<Guid> GetRecurringInitialHfJobId(int userJobId)
         {
             var job = await Get(userJobId, false);
-            if (job != null) return job.HfJobId;
-            return null;
+            if (job != null) return Guid.Parse(job.HfJobId);
+            return Guid.Empty;
         }
 
-        public async Task<bool> UpdateStatus(int userJobId, JobStatus status, string hfJobId)
+
+        public async Task<bool> UpdateStatusBgJobId(int userJobId, JobStatus status, string hfJobId)
         {
             var data = await Get(userJobId, true);
             using (var db = _ctxGenerator.GenerateNewContext())
@@ -274,7 +280,7 @@ namespace Exico.HF.DbAccess.Db.Services
                     data.HfJobId = hfJobId;
                     return await db.SaveChangesAsync() > 0;
                 }
-                 if (data.IsRecurringJob())
+                if (data.IsRecurringJob())
                 {
                     var recData = db.HfUserRecurringJob.Where(x => x.HfUserJobId == userJobId).FirstOrDefault();
                     recData.HfUserJob.Status = status;
@@ -284,7 +290,7 @@ namespace Exico.HF.DbAccess.Db.Services
                 }
                 return false;
             }
-        } 
+        }
 
         #endregion
 

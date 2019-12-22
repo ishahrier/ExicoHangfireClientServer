@@ -54,15 +54,15 @@ namespace Exico.HF.DbAccess.Managers
 
             if (t is HfUserRecurringJobModel)
             {
-                var hfJobId = Guid.NewGuid().ToString();
+                var initialRecJobId = Guid.NewGuid();
                 userJob = await _dbService.Create<T>(t);              
                 var casted = t.CastToRecurringJobModel();
-                _recClient.AddOrUpdate(hfJobId,
+                _recClient.AddOrUpdate(initialRecJobId.ToString(),
                     Job.FromExpression<IManageWork>(x => x.ExecuteWorkerAsync(userJob.ToWorkArguments(), JobCancellationToken.Null)),
                      casted.CronExpression,
                     TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId));
-                await _dbService.SetHfJobId(userJob.Id, hfJobId);
-                userJob.HfJobId = hfJobId; //Because we created the ID, so we know it.
+                await _dbService.SetRecurringJobInitialHfId(userJob.Id, initialRecJobId);
+                userJob.HfJobId = initialRecJobId.ToString(); //Because we created the ID, so we know it.
             }
 
             if (userJob == null) throw new Exception("Could not create user job definition.");
@@ -71,7 +71,7 @@ namespace Exico.HF.DbAccess.Managers
 
         public async Task<bool> Cancel(int id)
         {
-            var record = await _dbService.GetBase(id);
+            var record = await _dbService.GetBaseData(id);
             if (record != null)
             {
                 //await _dbService.UpdateStatus(record.Id, JobStatus.Cancelled, null);
@@ -99,7 +99,7 @@ namespace Exico.HF.DbAccess.Managers
 
         public async Task<bool> Delete(int id)
         {
-            var record = await _dbService.GetBase(id);
+            var record = await _dbService.GetBaseData(id);
             if (record != null)
             {
                 if (record.IsFireAndForgetOrScheduled())
@@ -125,7 +125,7 @@ namespace Exico.HF.DbAccess.Managers
 
         public async Task RunNow(int id)
         {
-            var record = await _dbService.GetBase(id);
+            var record = await _dbService.GetBaseData(id);
             if (record.IsRecurringJob())
                 _recClient.Trigger(record.HfJobId);
             else if (record.IsFireAndForgetOrScheduled())
