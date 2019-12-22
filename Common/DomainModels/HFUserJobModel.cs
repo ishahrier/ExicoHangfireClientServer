@@ -1,8 +1,6 @@
 ﻿using Exico.HF.Common.Enums;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace Exico.HF.Common.DomainModels
 {
@@ -12,7 +10,9 @@ namespace Exico.HF.Common.DomainModels
         public int Id { get; set; }
  
         [Required(AllowEmptyStrings = false)]
-        public string WorkerClass { get; set; }
+        public string WorkerClassName { get; set; }
+        [Required(AllowEmptyStrings = false)]
+        public string WorkerAssemblyName { get; set; }
         [Required]
         public string TimeZoneId { get; set; }
         [Required, MinLength(1)]

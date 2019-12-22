@@ -18,7 +18,8 @@ namespace Exico.HF.DbAccess.Db.Models
         public string HfJobId { get; set; }//this is updated later        
         public int? WorkDataId { get; set; }
         [Required(AllowEmptyStrings = false)]
-        public string WorkerClass { get; set; }
+        public string WorkerClassName { get; set; }
+        public string WorkerAssemblyName { get; set; }
         public string Note { get; set; }
         [Required]
         public string TimeZoneId { get; set; }

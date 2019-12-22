@@ -11,34 +11,27 @@ namespace Exico.HF.DbAccess.Managers
     public class WorkManager : IManageWork
     {
         private readonly IExicoHfDbService _dbService;
-        private readonly IServiceProvider provider;
+        private readonly IServiceProvider _provider;
 
         public WorkManager(IExicoHfDbService dbService,IServiceProvider provider)
         {
             _dbService = dbService;
-            this.provider = provider;
+            _provider = provider;
         }
 
         private T GetObject<T> (T  type) where T: Type
         {
-            return ActivatorUtilities.CreateInstance<T>(this.provider);
+            return ActivatorUtilities.CreateInstance<T>(this._provider);
         }
+
         public void ExecWorker(WorkArguments args, IJobCancellationToken cancellationToken)
         {
             try
             {
-                var t = Type.GetType(args.WorkerClass);
+                var wType = Type.GetType(args.GetFullQualifiedWokerClassName());
+                var wObj = (IWorker) ActivatorUtilities.CreateInstance(_provider,wType);
+                wObj.DoWork(args, cancellationToken);
 
-
-                var obj = GetObject(t);
-                
-                var i = _dbService.GetHfJobId(args.UserJobId).Result;
-                for (int j = 0; j < 10; j++)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    Console.WriteLine($" {args.WorkDataId} -  {args.JobType}");
-                    Thread.Sleep(5000);
-                }
             }
             catch (Exception ex)
             {

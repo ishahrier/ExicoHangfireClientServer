@@ -38,7 +38,7 @@ namespace Exico.HF.DbAccess.Managers
                 JobType = t.JobType,
                 UserJobId = t.Id,
                 WorkDataId = t.WorkDataId,
-                WorkerClass = t.WorkerClass
+                WorkerClass = t.WorkerClassName
             };
             if (t is HfUserFireAndForgetJobModel)
             {

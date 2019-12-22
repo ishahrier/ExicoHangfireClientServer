@@ -26,7 +26,8 @@ namespace Exico.HF.DbAccess.Extentions
                 UpdatedOn = model.UpdatedOn,
                 UserId = model.UserId,
                 WorkDataId = model.WorkDataId,
-                WorkerClass = model.WorkerClass,
+                WorkerClassName = model.WorkerClassName,
+                WorkerAssemblyName = model.WorkerAssemblyName,
                 HfJobId = model.HfJobId
             };
         }
@@ -69,7 +70,8 @@ namespace Exico.HF.DbAccess.Extentions
                 UpdatedOn = data.UpdatedOn,
                 UserId = data.UserId,
                 WorkDataId = data.WorkDataId,
-                WorkerClass = data.WorkerClass,
+                WorkerClassName = data.WorkerClassName,
+                WorkerAssemblyName = data.WorkerAssemblyName,
                 Id = data.Id,
                 HfJobId = data.HfJobId
             };
@@ -88,7 +90,7 @@ namespace Exico.HF.DbAccess.Extentions
                 UpdatedOn = data.HfUserJob.UpdatedOn,
                 UserId = data.HfUserJob.UserId,
                 WorkDataId = data.HfUserJob.WorkDataId,
-                WorkerClass = data.HfUserJob.WorkerClass,
+                WorkerClassName = data.HfUserJob.WorkerClassName,
                 Id = data.HfUserJob.Id,
                 HfJobId = data.HfUserJob.HfJobId
             };
@@ -113,7 +115,7 @@ namespace Exico.HF.DbAccess.Extentions
                 UpdatedOn = data.HfUserJob.UpdatedOn,
                 UserId = data.HfUserJob.UserId,
                 WorkDataId = data.HfUserJob.WorkDataId,
-                WorkerClass = data.HfUserJob.WorkerClass,
+                WorkerClassName = data.HfUserJob.WorkerClassName,
                 Id = data.HfUserJob.Id,
                 HfJobId = data.HfUserJob.HfJobId,
             };

@@ -1,9 +1,11 @@
 ﻿using Exico.HF.Common.DomainModels;
+using Exico.HF.Common.Interfaces;
 using Exico.HF.DbAccess.Db.Services;
 using Exico.HF.DbAccess.Managers;
 using Hangfire;
 using HFServer.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
@@ -15,34 +17,38 @@ namespace HFServer.Controllers
     {
         private readonly IManageJob _jm;
         private readonly IExicoHfDbService _service;
+        private readonly IServiceProvider proider;
 
         public IServiceProvider Di { get; }
        // public IManageWork<HfUserRecurringJobModel> Model { get; }
 
-        public HomeController(IManageJob jm, IExicoHfDbService service )
+        public HomeController(IManageJob jm, IExicoHfDbService service, IServiceProvider proider )
         {
             _jm = jm;
             _service = service;
- 
+            this.proider = proider;
         }
         public IActionResult Index()
         {
 
-            var rec = new HfUserRecurringJobModel()
-            {
-                Name = "Tst recurring",
-                Note = "Test Note",
-                UserId = "1111",
-                WorkerClass = "The recurring Worker",
-                TimeZoneId = "Central Standard Time",
-                Status = Exico.HF.Common.Enums.JobStatus.None,
-                WorkDataId = 10,
-                CronExpression = Cron.MinuteInterval(2),
+            //var rec = new HfUserRecurringJobModel()
+            //{
+            //    Name = "Tst recurring",
+            //    Note = "Test Note",
+            //    UserId = "1111",
+            //    WorkerClass = "The recurring Worker",
+            //    TimeZoneId = "Central Standard Time",
+            //    Status = Exico.HF.Common.Enums.JobStatus.None,
+            //    WorkDataId = 10,
+            //    CronExpression = Cron.MinuteInterval(2),
 
-            };
+            //};
 
-            var data = JsonConvert.SerializeObject(rec);
- 
+            //var data = JsonConvert.SerializeObject(rec);
+
+            var t = Type.GetType("Exico.HF.Common.Interfaces.DownloadAllProducts, Exico.HF.Common");
+            var obj = (IWorker)ActivatorUtilities.CreateInstance(this.proider, t);
+            obj.DoWork(0, null);
             return View();
         }
 
@@ -53,7 +59,7 @@ namespace HFServer.Controllers
                 Name = "Tst Fnf",
                 Note = "Test Note",
                 UserId = "1111",
-                WorkerClass = "The Fnf Worker",               
+                WorkerClassName = "The Fnf Worker",               
                 TimeZoneId = "Central Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
                 WorkDataId = 10
@@ -70,7 +76,7 @@ namespace HFServer.Controllers
                 Name = "Tst schedule",
                 Note = "Test Note",
                 UserId = "1111",
-                WorkerClass = "The Fnf Worker",
+                WorkerClassName = "The Fnf Worker",
                 TimeZoneId = "Eastern Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
                 WorkDataId = 10,
@@ -89,7 +95,7 @@ namespace HFServer.Controllers
                 Name = "Tst recurring",
                 Note = "Test Note",
                 UserId = "1111",
-                WorkerClass = "The recurring Worker",
+                WorkerClassName = "The recurring Worker",
                 TimeZoneId = "Eastern Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
                 WorkDataId = 10,

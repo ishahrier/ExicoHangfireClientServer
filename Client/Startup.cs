@@ -56,8 +56,8 @@ namespace Client
                 string jobId = "";
                 endpoints.MapGet("/", async context =>
                 {
-                    var t = Type.GetType("Exico.HF.Common.Interfaces.DownloadAllProducts, Exico.HF.Common");
-                    var obj = (IWorker) ActivatorUtilities.CreateInstance(provider, t);
+                    //var t = Type.GetType("Exico.HF.Common.Interfaces.DownloadAllProducts, Exico.HF.Common");
+                    //var obj = (IWorker) ActivatorUtilities.CreateInstance(provider, t);
                     
                     await context.Response.WriteAsync("welcome");
                 });
