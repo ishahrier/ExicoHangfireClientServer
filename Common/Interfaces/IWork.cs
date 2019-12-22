@@ -11,7 +11,7 @@ namespace Exico.HF.Common.Interfaces
 {
     public interface  IWorker
     {
-        Task<bool>  DoWork(WorkArguments args, IJobCancellationToken token);
+        Task<bool>  DoWorkAsync(WorkArguments args, IJobCancellationToken token);
     }
 
     public class DownloadAllProducts : IWorker
@@ -22,7 +22,7 @@ namespace Exico.HF.Common.Interfaces
         {
             this.logger = logger;
         }
-        public async Task<bool> DoWork(WorkArguments args , IJobCancellationToken token)
+        public async Task<bool> DoWorkAsync(WorkArguments args , IJobCancellationToken token)
         {
             var ret = false;
             try

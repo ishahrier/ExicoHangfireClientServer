@@ -32,50 +32,40 @@ namespace Exico.HF.DbAccess.Managers
             _recClient = hfRecClient;
             _logger = logger;
         }
-        private WorkArguments CreateWorkArguments<T>(T t) where T : HfUserJobModel
-        {
-            return
-            new WorkArguments()
-            {
-                JobType = t.JobType,
-                WorkDataId = t.WorkDataId,
-                WorkerClassName = t.WorkerClassName,
-                WorkerAssemlyName = t.WorkerAssemblyName,
-                Name = t.Name
-            };
-        }
+
         public async Task<T> Create<T>(T t) where T : HfUserJobModel
         {
             T userJob = null;
-            var workArgs = CreateWorkArguments(t);
+            
             if (t is HfUserFireAndForgetJobModel)
             {
-                userJob = await _dbService.Create<T>(t);
-                workArgs.UserJobId = userJob.Id;
-                _bgClient.Enqueue<IManageWork>(x => x.ExecuteWorker(workArgs, JobCancellationToken.Null));
+                userJob = await _dbService.Create<T>(t);                 
+                _bgClient.Enqueue<IManageWork>(x => x.ExecuteWorkerAsync(userJob.ToWorkArguments(), JobCancellationToken.Null));
             }
+
             if (t is HfUserScheduledJobModel)
             {
-                userJob = await _dbService.Create<T>(t);
-                workArgs.UserJobId = userJob.Id;
+                userJob = await _dbService.Create<T>(t);                
                 var casted = t.CastToScheduledJobModel();
-                _bgClient.Schedule<IManageWork>(x => x.ExecuteWorker(workArgs, JobCancellationToken.Null),
+                _bgClient.Schedule<IManageWork>(x => x.ExecuteWorkerAsync(userJob.ToWorkArguments(), JobCancellationToken.Null),
                       TimeZoneInfo.ConvertTimeToUtc(casted.ScheduledAt.DateTime.ToUnspecifiedDateTime(),
                       TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId)));
             }
+
             if (t is HfUserRecurringJobModel)
             {
                 var hfJobId = Guid.NewGuid().ToString();
-                userJob = await _dbService.Create<T>(t);
-                workArgs.UserJobId = userJob.Id;
+                userJob = await _dbService.Create<T>(t);              
                 var casted = t.CastToRecurringJobModel();
                 _recClient.AddOrUpdate(hfJobId,
-                    Job.FromExpression<IManageWork>(x => x.ExecuteWorker(workArgs, JobCancellationToken.Null)),
+                    Job.FromExpression<IManageWork>(x => x.ExecuteWorkerAsync(userJob.ToWorkArguments(), JobCancellationToken.Null)),
                      casted.CronExpression,
                     TimeZoneInfo.FindSystemTimeZoneById(userJob.TimeZoneId));
                 await _dbService.SetHfJobId(userJob.Id, hfJobId);
                 userJob.HfJobId = hfJobId; //Because we created the ID, so we know it.
             }
+
+            if (userJob == null) throw new Exception("Could not create user job definition.");
             return userJob;
         }
 
@@ -88,7 +78,7 @@ namespace Exico.HF.DbAccess.Managers
 
                 if (record.IsFireAndForgetOrScheduled())
                     _bgClient.Delete(record.HfJobId);
-                else
+                else if (record.IsRecurringJob())
                 {
                     var job = JobStorage.Current
                         .GetConnection()
@@ -98,6 +88,8 @@ namespace Exico.HF.DbAccess.Managers
                     if (job != null)
                         _bgClient.Delete(job.LastJobId);
                 }
+                else
+                    throw new Exception("Cannot cancel, invalid job type detected.");
 
                 return true;
             }
@@ -123,7 +115,7 @@ namespace Exico.HF.DbAccess.Managers
                     _recClient.RemoveIfExists(record.HfJobId);
                 }
                 else
-                    throw new Exception("Invalid job type detected.");
+                    throw new Exception("Cannot delete, invalid job type detected.");
 
                 return await _dbService.Delete(record.Id);
             }
@@ -141,11 +133,11 @@ namespace Exico.HF.DbAccess.Managers
                 if (record.HfJobId != null)
                     _bgClient.ChangeState(record.HfJobId, new EnqueuedState());
                 else
-                    throw new Exception("HFJob ID cannot be null");
+                    throw new Exception("Cannot run the job, HFJob ID cannot be null");
 
             }
             else
-                throw new Exception("Invalid job type detected.");
+                throw new Exception("Cannot run the job, invalid job type detected.");
         }
 
     }

@@ -136,6 +136,21 @@ namespace Exico.HF.DbAccess.Extentions
         public static HfUserRecurringJobModel CastToRecurringJobModel(this HfUserJobModel data) => data as HfUserRecurringJobModel;
         #endregion
 
+        #region model to work arg model
+        public static WorkArguments ToWorkArguments(this HfUserJobModel data)
+        {
+            return new WorkArguments()
+            {
+                JobType = data.JobType,
+                WorkDataId = data.WorkDataId,
+                WorkerClassName = data.WorkerClassName,
+                WorkerAssemlyName = data.WorkerAssemblyName,
+                Name = data.Name,
+                UserJobId = data.Id
+            };
+        }
+        #endregion
+
         public static bool IsRecurringJob(this HfUserJob record) => record.JobType == JobType.Recurring;
         public static bool IsScheduledJob(this HfUserJob record) => record.JobType == JobType.Scheduled;
         public static bool IsFireAndForgetJob(this HfUserJob record) => record.JobType == JobType.FireAndForget;

@@ -26,13 +26,13 @@ namespace Exico.HF.DbAccess.Managers
         }
 
  
-        public async Task<bool> ExecuteWorker(WorkArguments args, IJobCancellationToken cancellationToken)
+        public async Task<bool> ExecuteWorkerAsync(WorkArguments args, IJobCancellationToken cancellationToken)
         {
             try
             {
                 var wType = Type.GetType(args.GetFullQualifiedWokerClassName());
                 var wObj = (IWorker) ActivatorUtilities.CreateInstance(_provider,wType);
-                var ret = await wObj.DoWork(args, cancellationToken);
+                var ret = await wObj.DoWorkAsync(args, cancellationToken);
                 return ret ;
             }
             catch (Exception ex)
