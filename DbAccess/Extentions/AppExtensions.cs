@@ -27,6 +27,7 @@ namespace Exico.HF.DbAccess.Extentions
         public static void UseExicoHfExtension (this IApplicationBuilder app)
         {
             GlobalJobFilters.Filters.Add(app.ApplicationServices.GetRequiredService<IExicoHfFilter>());
+            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
         }
     }
 }
