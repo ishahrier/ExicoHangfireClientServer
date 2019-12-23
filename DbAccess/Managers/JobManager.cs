@@ -36,7 +36,7 @@ namespace Exico.HF.DbAccess.Managers
         public async Task<T> Create<T>(T t) where T : HfUserJobModel
         {
             T userJob = null;
-            
+
             if (t is HfUserFireAndForgetJobModel)
             {
                 userJob = await _dbService.Create<T>(t);
@@ -124,28 +124,45 @@ namespace Exico.HF.DbAccess.Managers
             return false;
         }
 
-        public async Task RunNow(int id)
+        public async Task<bool> RunNow(int userjobId)
         {
-            var record = await _dbService.GetBaseData(id);
-            if (record.IsRecurringJob())
-                _recClient.Trigger(record.HfJobId);
-            else if (record.IsFireAndForgetOrScheduled())
-            {
-                if (record.HfJobId != null)
-                    _bgClient.ChangeState(record.HfJobId, new EnqueuedState());
-                else
-                    throw new Exception("Cannot run the job, HFJob ID cannot be null");
+            bool ret = false;
 
+            if (!await IsAlreadyRunning(userjobId))
+            {
+                var record = await _dbService.GetBaseData(userjobId);
+                if (record != null)
+                {
+                    if (record.HfJobId != null)
+                    {
+                        if (record.IsRecurringJob())
+                        {
+                            _logger.LogInformation("Manually triggering {t} userJobId {i}", record.JobType.ToString(), userjobId);
+                            _recClient.Trigger(record.HfJobId);
+                            ret = true;
+                        }
+                        else if (record.IsFireAndForgetOrScheduled())
+                        {
+                            _logger.LogInformation("Manually triggering {t} userJobId {i}", record.JobType.ToString(), userjobId);
+                            _bgClient.ChangeState(record.HfJobId, new EnqueuedState());
+                            ret = true;
+                        }
+                        else throw new Exception($"Cannot manually run userJobId {userjobId}.Invalid JobType Detected.");
+                    }
+                    else _logger.LogWarning("Cannot manually run userJobId {i}. Because HfJobId is null.", userjobId);
+                }
+                else _logger.LogWarning("Cannot manually run userJobId {i}. Because user job is not found.", userjobId);
             }
-            else
-                throw new Exception("Cannot run the job, invalid job type detected.");
+            else _logger.LogWarning("Cannot manually run userJobId {i}. Because it is already running.", userjobId);
+
+            return ret;
         }
 
         public async Task<bool> IsAlreadyRunning(int userJobId)
         {
             var data = await _dbService.GetBaseData(userJobId);
-            return data.Status == JobStatus.Enqueued || data.Status == JobStatus.Processing; 
-            
+            return data.Status == JobStatus.Enqueued || data.Status == JobStatus.Processing;
+
         }
     }
 }

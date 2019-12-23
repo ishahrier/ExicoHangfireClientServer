@@ -39,7 +39,7 @@ namespace Exico.HF.DbAccess.Filter
                     }
                 }
             }
-            return false;
+            return true;
         }
 
         public async Task<bool> HandleOnStateElection(ElectStateContext context)

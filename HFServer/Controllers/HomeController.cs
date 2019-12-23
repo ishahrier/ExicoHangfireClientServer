@@ -137,5 +137,12 @@ namespace HFServer.Controllers
             var result = _jm.Cancel(id).Result;
             return View("Index");
         }
+
+        public ActionResult Run(int id)
+        {
+            var result = _jm.RunNow(id);
+            return View("Index");
+        }
+
     }
 }

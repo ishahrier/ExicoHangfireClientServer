@@ -31,7 +31,7 @@ namespace Exico.HF.Common.Interfaces
                 {
                     token.ThrowIfCancellationRequested();
                     this.logger.LogInformation("#{i}.This is from download all product worker. JobtType {j}, UserJobId {k}",i,args.JobType.ToString(), args.UserJobId);
-                    await Task.Delay( 20000);
+                    await Task.Delay( 5000);
                     ret = true;
                 }
             }
