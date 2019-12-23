@@ -20,6 +20,7 @@ namespace Exico.HF.DbAccess.Filter
         public override void OnStateElection(ElectStateContext context)
         {
             var result = _lifeCycleHandler.HandleOnStateElection(context).Result;
+            
         }
     }
 }

@@ -48,7 +48,7 @@ namespace Exico.HF.DbAccess.Filter
             var state = context.CandidateState;
             var args = GetWorkArguments(context.BackgroundJob.Job);
             if (state.Name == FailedState.StateName)
-                return await _dbService.UpdateStatusBgJobId(args.UserJobId, JobStatus.Failed, null);
+                return await _dbService.UpdateStatusBgJobId(args.UserJobId, JobStatus.Failed, context.BackgroundJob?.Id);
             else
             {
                 if (context.BackgroundJob != null)
