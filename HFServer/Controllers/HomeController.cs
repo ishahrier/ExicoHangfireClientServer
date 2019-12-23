@@ -106,7 +106,7 @@ namespace HFServer.Controllers
                 TimeZoneId = "Eastern Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
                 WorkDataId = 12,
-                CronExpression = Cron.MinuteInterval(2),
+                CronExpression = Cron.MinuteInterval(1),
                 
             };
 
@@ -114,6 +114,7 @@ namespace HFServer.Controllers
             return View("Index");
 
         }
+  
 
         //public async Task<ActionResult> CreateRecurring()
         //{

@@ -141,7 +141,7 @@ namespace Exico.HF.DbAccess.Db.Services
         }
 
         public async Task<HfUserJobModel> GetBaseData(int userJobId)
-        {            
+        {
             var data = (await Get(userJobId));
             if (data.IsFireAndForgetJob())
             {
@@ -283,7 +283,7 @@ namespace Exico.HF.DbAccess.Db.Services
                 }
                 if (data.IsRecurringJob())
                 {
-                    var recData = db.HfUserRecurringJob.Include(x=>x.HfUserJob).Where(x => x.HfUserJobId == userJobId).FirstOrDefault();
+                    var recData = db.HfUserRecurringJob.Include(x => x.HfUserJob).Where(x => x.HfUserJobId == userJobId).FirstOrDefault();
                     recData.HfUserJob.Status = status;
                     recData.LastHfJobId = hfJobId;
                     return await db.SaveChangesAsync() > 0;
@@ -291,6 +291,18 @@ namespace Exico.HF.DbAccess.Db.Services
                 }
                 return false;
             }
+        }
+
+        public async Task<string> GetHfBackgroundJobId(int userJobId)
+        {
+            var data = await GetBaseData(userJobId);
+            string ret = string.Empty;
+            if (data != null)
+            {
+                if (data.IsFireAndForgetOrScheduled()) ret = data.HfJobId;
+                else if (data.IsRecurringJob()) ret = (data as HfUserRecurringJobModel).LastHfJobId;
+            }
+            return ret;
         }
 
         #endregion

@@ -50,6 +50,6 @@ namespace Exico.HF.DbAccess.Db.Services
         Task<bool> SetRecurringLastRunJobId(int userJobId, string lastRunJobId);
         Task<bool> UpdateRecurringNextRun(int userJobId,  DateTime nextRun);
 
-
+        Task<string> GetHfBackgroundJobId(int userJobId);
     }
 }

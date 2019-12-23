@@ -141,5 +141,11 @@ namespace Exico.HF.DbAccess.Managers
                 throw new Exception("Cannot run the job, invalid job type detected.");
         }
 
+        public async Task<bool> IsAlreadyRunning(int userJobId)
+        {
+            var data = await _dbService.GetBaseData(userJobId);
+            return data.Status == JobStatus.Enqueued || data.Status == JobStatus.Processing; 
+            
+        }
     }
 }

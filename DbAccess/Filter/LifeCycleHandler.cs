@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Exico.HF.DbAccess.Filter
 {
- 
+
     public class LifeCycleHandler : ILifeCyleHandler
     {
         private readonly IExicoHfDbService _dbService;
@@ -44,31 +44,38 @@ namespace Exico.HF.DbAccess.Filter
 
         public async Task<bool> HandleOnStateElection(ElectStateContext context)
         {
-
-            var state = context.CandidateState;
-            var args = GetWorkArguments(context.BackgroundJob.Job);
-            if (state.Name == FailedState.StateName)
-                return await _dbService.UpdateStatusBgJobId(args.UserJobId, JobStatus.Failed, context.BackgroundJob?.Id);
-            else
+            try
             {
-                if (context.BackgroundJob != null)
+                var state = context.CandidateState;
+                var args = GetWorkArguments(context.BackgroundJob.Job);
+                if (state.Name == FailedState.StateName)
+                    return await _dbService.UpdateStatusBgJobId(args.UserJobId, JobStatus.Failed, context.BackgroundJob?.Id);
+                else
                 {
-                    JobStatus status = JobStatus.None;
-                    if (state.Name == EnqueuedState.StateName)
-                        status = JobStatus.Enqueued;
-                    else if (state.Name == ProcessingState.StateName)
-                        status = JobStatus.Processing;
-                    else if (state.Name == ScheduledState.StateName)
-                        status = JobStatus.Scheduled;
-                    else if (state.Name == SucceededState.StateName)
-                        status = JobStatus.Succeeded;
-                    else if (state.Name == DeletedState.StateName)
-                        status = JobStatus.Cancelled;
+                    if (context.BackgroundJob != null)
+                    {
+                        JobStatus status = JobStatus.None;
+                        if (state.Name == EnqueuedState.StateName)
+                            status = JobStatus.Enqueued;
+                        else if (state.Name == ProcessingState.StateName)
+                            status = JobStatus.Processing;
+                        else if (state.Name == ScheduledState.StateName)
+                            status = JobStatus.Scheduled;
+                        else if (state.Name == SucceededState.StateName)
+                            status = JobStatus.Succeeded;
+                        else if (state.Name == DeletedState.StateName)
+                            status = JobStatus.Cancelled;
 
-                    return await _dbService.UpdateStatusBgJobId(args.UserJobId, status, context.BackgroundJob.Id);
+                        return await _dbService.UpdateStatusBgJobId(args.UserJobId, status, context.BackgroundJob.Id);
+                    }
                 }
+                return false;
             }
-            return false;
+            catch (System.Exception ex)
+            {
+
+                throw ex;
+            }
         }
 
         protected WorkArguments GetWorkArguments(Job job)

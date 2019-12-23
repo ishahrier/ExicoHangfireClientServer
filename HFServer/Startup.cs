@@ -26,7 +26,7 @@ namespace HFServer
             services.AddHangfire(configuration => configuration
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_110)
                 .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings()
+                .UseRecommendedSerializerSettings()                
                 .UseSqlServerStorage(Configuration.GetConnectionString("HangfireConnection"), new SqlServerStorageOptions
                 {
                     CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
@@ -34,7 +34,8 @@ namespace HFServer
                     QueuePollInterval = TimeSpan.Zero,
                     UseRecommendedIsolationLevel = true,
                     UsePageLocksOnDequeue = true,
-                    DisableGlobalLocks = true
+                    DisableGlobalLocks = true,
+                    
                 }));
             services.AddHangfireServer();
           //  services.AddExicoHfExtension();

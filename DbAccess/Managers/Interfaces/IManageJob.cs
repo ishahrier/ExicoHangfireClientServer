@@ -33,6 +33,8 @@ namespace Exico.HF.DbAccess.Managers
         /// <returns></returns>
         Task RunNow(int id);
 
+        Task<bool> IsAlreadyRunning(int userJob);
+
         
     }
 }

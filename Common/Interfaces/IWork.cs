@@ -27,11 +27,11 @@ namespace Exico.HF.Common.Interfaces
             var ret = false;
             try
             {
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 5; i++)
                 {
                     token.ThrowIfCancellationRequested();
-                    this.logger.LogInformation("This is from download all product worker. JobtType {i}, UserJobId {j}",args.JobType.ToString(), args.UserJobId);
-                    await Task.Delay( 5000);
+                    this.logger.LogInformation("#{i}.This is from download all product worker. JobtType {j}, UserJobId {k}",i,args.JobType.ToString(), args.UserJobId);
+                    await Task.Delay( 20000);
                     ret = true;
                 }
             }

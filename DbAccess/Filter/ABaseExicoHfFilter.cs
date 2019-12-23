@@ -18,9 +18,12 @@ namespace Exico.HF.DbAccess.Filter
         private ABaseExicoHfFilter() { }
         protected readonly ILogger<DefaultExicoHfFilter> _logger;
         protected readonly ILifeCyleHandler _lifeCycleHandler;
-        public ABaseExicoHfFilter(ILifeCyleHandler lifeCYcleHandler, ILogger<DefaultExicoHfFilter> logger)
+        protected readonly IManageJob manager;
+
+        public ABaseExicoHfFilter(ILifeCyleHandler lifeCYcleHandler,IManageJob manager, ILogger<DefaultExicoHfFilter> logger)
         {
             _lifeCycleHandler = lifeCYcleHandler;
+            this.manager = manager;
             _logger = logger;
         }
         protected WorkArguments GetWorkArguments(Job job) => (WorkArguments)job.Args[0];
