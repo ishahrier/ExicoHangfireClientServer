@@ -36,7 +36,7 @@ namespace Exico.HF.DbAccess.Managers
                 _logger.LogInformation( "Now executing worker/userJobId {i}", args.UserJobId);
                 var ret = await wObj.DoWorkAsync(args, cancellationToken);
                 _logger.LogInformation("Finished executing worker/userJobId {id}. Return value is {value}",args.UserJobId, ret);
-                throw new Exception("fake");
+        
                 return ret ;
             }
             catch (Exception ex)
@@ -44,7 +44,7 @@ namespace Exico.HF.DbAccess.Managers
                 _logger.LogError(ex,"Unhandled exception for worker {@data}", args);
                 throw ex;
             }
-            return false;
+       
         }
     }
 
