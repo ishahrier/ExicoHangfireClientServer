@@ -38,12 +38,8 @@ namespace HFServer
                     
                 }));
             services.AddHangfireServer();
-          //  services.AddExicoHfExtension();
+            
             services.AddExicoHfExtension(Configuration.GetConnectionString("HangfireConnection"));
-
-            //services.AddScoped<IFireAndForgetTask, MyFnFJob>();
-            //services.AddScoped<IScheduledTask, MyScheduledJob>();
-            services.AddScoped<ITest, MyClass>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {

@@ -106,7 +106,7 @@ namespace HFServer.Controllers
                 TimeZoneId = "Eastern Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
                 WorkDataId = 12,
-                CronExpression = Cron.MinuteInterval(1),
+                CronExpression = Cron.MinuteInterval(1)
                 
             };
 
@@ -114,17 +114,6 @@ namespace HFServer.Controllers
             return View("Index");
 
         }
-  
-
-        //public async Task<ActionResult> CreateRecurring()
-        //{
-        //    var options = new RecurringTaskOptions();
-        //    options.SetTimeZoneId("Central Standard Time");
-        //    options.SetCronExpression(Cron.Minutely());
-        //    options.SetUserId("4000");
-        //    await _jm.Create(options, "Recurring", "Recurring note");
-        //    return View("Index");
-        //}
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -29,8 +29,7 @@ namespace Exico.HF.DbAccess.Managers
         public async Task<bool> ExecuteWorkerAsync(WorkArguments args, IJobCancellationToken cancellationToken)
         {
             try
-            {
-                
+            {               
                 
                     _logger.LogInformation("Trying to create worker instance using {@data}", args);
                     var wType = Type.GetType(args.GetFullQualifiedWokerClassName());
