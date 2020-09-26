@@ -16,11 +16,11 @@ namespace Exico.HF.Common.Interfaces
 
     public class DownloadAllProducts : IWorker
     {
-        private readonly ILogger<DownloadAllProducts> logger;
+        private readonly ILogger<DownloadAllProducts> _logger;
 
         public DownloadAllProducts(ILogger<DownloadAllProducts> logger)
         {
-            this.logger = logger;
+            this._logger = logger;
         }
         public async Task<bool> DoWorkAsync(WorkArguments args , IJobCancellationToken token)
         {
@@ -30,17 +30,17 @@ namespace Exico.HF.Common.Interfaces
                 for (var i = 0; i < 5; i++)
                 {
                     token.ThrowIfCancellationRequested();
-                    this.logger.LogInformation("#{i}.This is from download all product worker. JobType {j}, UserJobId {k}",i,args.JobType.ToString(), args.UserJobId);
+                    this._logger.LogInformation("#{i}.This is from download all product worker. JobType {j}, UserJobId {k}",i,args.JobType.ToString(), args.UserJobId);
                     await Task.Delay( 5000);
                     ret = true;
                 }
             }
             catch (Exception)
             {
-                logger.LogWarning("Job cancelled JobType {i}, UserJobId {j}", args.JobType.ToString(), args.UserJobId);                
+                _logger.LogWarning("Job cancelled JobType {i}, UserJobId {j}", args.JobType.ToString(), args.UserJobId);                
             }
 
-            logger.LogInformation("Job ended JobType {i}, UserJobId {j}", args.JobType.ToString(), args.UserJobId);
+            _logger.LogInformation("Job ended JobType {i}, UserJobId {j}", args.JobType.ToString(), args.UserJobId);
             return ret;
         }
     }

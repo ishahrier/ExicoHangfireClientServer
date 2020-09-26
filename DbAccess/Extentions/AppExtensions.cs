@@ -1,7 +1,9 @@
 ﻿using Exico.HF.DbAccess.Db;
 using Exico.HF.DbAccess.Db.Services;
 using Exico.HF.DbAccess.Filter;
+using Exico.HF.DbAccess.Filter.Interfaces;
 using Exico.HF.DbAccess.Managers;
+using Exico.HF.DbAccess.Managers.Interfaces;
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +22,7 @@ namespace Exico.HF.DbAccess.Extentions
             services.AddScoped<IExicoHfFilter, DefaultExicoHfFilter>();
             services.AddScoped<IManageWork, WorkManager>();
             services.AddScoped<IGenerateDbContext, GenerateDbContext>();
-            services.AddScoped<ILifeCyleHandler, LifeCycleHandler>();
+            services.AddScoped<ILifeCycleHandler, LifeCycleHandler>();
 
         }
 

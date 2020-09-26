@@ -12,6 +12,7 @@ using Serilog;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Exico.HF.DbAccess.Managers.Interfaces;
 
 namespace HFServer.Controllers
 {
@@ -20,17 +21,17 @@ namespace HFServer.Controllers
         private readonly IManageJob _jm;
         private readonly ILogger<HomeController> _logger;
         private readonly IExicoHfDbService _service;
-        private readonly IServiceProvider proider;
+        private readonly IServiceProvider _provider;
 
         public IServiceProvider Di { get; }
         // public IManageWork<HfUserRecurringJobModel> Model { get; }
 
-        public HomeController(IManageJob jm, ILogger<HomeController> logger, IExicoHfDbService service, IServiceProvider proider)
+        public HomeController(IManageJob jm, ILogger<HomeController> logger, IExicoHfDbService service, IServiceProvider provider)
         {
             _jm = jm;
             this._logger = logger;
             _service = service;
-            this.proider = proider;
+            this._provider = provider;
         }
         public IActionResult Index()
         {
