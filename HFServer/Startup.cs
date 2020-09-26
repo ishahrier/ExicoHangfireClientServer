@@ -72,6 +72,7 @@ namespace HFServer
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
+                endpoints.MapHangfireDashboard();
             });
         }
     }
