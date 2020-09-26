@@ -146,7 +146,7 @@ namespace Exico.HF.DbAccess.Extentions
                 JobType = data.JobType,
                 WorkDataId = data.WorkDataId,
                 WorkerClassName = data.WorkerClassName,
-                WorkerAssemlyName = data.WorkerAssemblyName,
+                WorkerAssemblyName = data.WorkerAssemblyName,
                 Name = data.Name,
                 UserJobId = data.Id
             };

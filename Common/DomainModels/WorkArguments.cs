@@ -14,10 +14,10 @@ namespace Exico.HF.Common.DomainModels
         public int? WorkDataId { get; set; }
         public JobType JobType { get; set; }
         public string WorkerClassName { get; set; }
-        public string WorkerAssemlyName { get; set; }
+        public string WorkerAssemblyName { get; set; }
         public string Name { get; set; }
 
         
-        public string GetFullQualifiedWokerClassName() => $"{this.WorkerClassName}, {this.WorkerAssemlyName}";
+        public string GetFullQualifiedWorkerClassName() => $"{this.WorkerClassName}, {this.WorkerAssemblyName}";
     }
 }

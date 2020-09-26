@@ -32,7 +32,7 @@ namespace Exico.HF.DbAccess.Managers
             {               
                 
                     _logger.LogInformation("Trying to create worker instance using {@data}", args);
-                    var wType = Type.GetType(args.GetFullQualifiedWokerClassName());
+                    var wType = Type.GetType(args.GetFullQualifiedWorkerClassName());
                     var wObj = (IWorker)ActivatorUtilities.CreateInstance(_provider, wType);
                     _logger.LogInformation("Now executing worker/userJobId {i}", args.UserJobId);
                     var ret = await wObj.DoWorkAsync(args, cancellationToken);

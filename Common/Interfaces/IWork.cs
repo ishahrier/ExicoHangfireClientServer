@@ -27,20 +27,20 @@ namespace Exico.HF.Common.Interfaces
             var ret = false;
             try
             {
-                for (int i = 0; i < 5; i++)
+                for (var i = 0; i < 5; i++)
                 {
                     token.ThrowIfCancellationRequested();
-                    this.logger.LogInformation("#{i}.This is from download all product worker. JobtType {j}, UserJobId {k}",i,args.JobType.ToString(), args.UserJobId);
+                    this.logger.LogInformation("#{i}.This is from download all product worker. JobType {j}, UserJobId {k}",i,args.JobType.ToString(), args.UserJobId);
                     await Task.Delay( 5000);
                     ret = true;
                 }
             }
             catch (Exception)
             {
-                logger.LogWarning("Job cancelled JobtType {i}, UserJobId {j}", args.JobType.ToString(), args.UserJobId);                
+                logger.LogWarning("Job cancelled JobType {i}, UserJobId {j}", args.JobType.ToString(), args.UserJobId);                
             }
 
-            logger.LogInformation("Job ended JobtType {i}, UserJobId {j}", args.JobType.ToString(), args.UserJobId);
+            logger.LogInformation("Job ended JobType {i}, UserJobId {j}", args.JobType.ToString(), args.UserJobId);
             return ret;
         }
     }

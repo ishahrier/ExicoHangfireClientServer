@@ -37,7 +37,7 @@ namespace HFServer
                     DisableGlobalLocks = true,
                     
                 }));
-            services.AddHangfireServer();
+            services.AddHangfireServer(); // this will enable job processing
             
             services.AddExicoHfExtension(Configuration.GetConnectionString("HangfireConnection"));
 
