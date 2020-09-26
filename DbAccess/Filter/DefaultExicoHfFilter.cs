@@ -4,6 +4,8 @@ using Hangfire.Server;
 using Hangfire.States;
 using Microsoft.Extensions.Logging;
 using System;
+using Exico.HF.DbAccess.Filter.Interfaces;
+using Exico.HF.DbAccess.Managers.Interfaces;
 
 namespace Exico.HF.DbAccess.Filter
 {
@@ -11,7 +13,7 @@ namespace Exico.HF.DbAccess.Filter
 
     public class DefaultExicoHfFilter : ABaseExicoHfFilter
     {
-        public DefaultExicoHfFilter(ILifeCyleHandler lifeCYcleHandler,IManageJob manager, ILogger<DefaultExicoHfFilter> logger) :
+        public DefaultExicoHfFilter(ILifeCycleHandler lifeCYcleHandler,IManageJob manager, ILogger<DefaultExicoHfFilter> logger) :
             base(lifeCYcleHandler, manager, logger)
         { }
 

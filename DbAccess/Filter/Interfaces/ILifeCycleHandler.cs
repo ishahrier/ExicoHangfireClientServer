@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Exico.HF.DbAccess.Filter
+namespace Exico.HF.DbAccess.Filter.Interfaces
 {
-    public interface ILifeCyleHandler
+    public interface ILifeCycleHandler
     {
         Task<bool> HandleOnStateElection(ElectStateContext ctx);
         Task<bool> HandleOnPerformed(PerformedContext ctx);

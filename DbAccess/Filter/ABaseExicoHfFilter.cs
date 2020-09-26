@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Exico.HF.DbAccess.Filter.Interfaces;
+using Exico.HF.DbAccess.Managers.Interfaces;
 
 namespace Exico.HF.DbAccess.Filter
 {
@@ -17,10 +19,10 @@ namespace Exico.HF.DbAccess.Filter
     {
         private ABaseExicoHfFilter() { }
         protected readonly ILogger<DefaultExicoHfFilter> _logger;
-        protected readonly ILifeCyleHandler _lifeCycleHandler;
+        protected readonly ILifeCycleHandler _lifeCycleHandler;
         protected readonly IManageJob manager;
 
-        public ABaseExicoHfFilter(ILifeCyleHandler lifeCYcleHandler,IManageJob manager, ILogger<DefaultExicoHfFilter> logger)
+        public ABaseExicoHfFilter(ILifeCycleHandler lifeCYcleHandler,IManageJob manager, ILogger<DefaultExicoHfFilter> logger)
         {
             _lifeCycleHandler = lifeCYcleHandler;
             this.manager = manager;

@@ -9,16 +9,17 @@ using Hangfire.Storage;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
+using Exico.HF.DbAccess.Filter.Interfaces;
 
 namespace Exico.HF.DbAccess.Filter
 {
 
-    public class LifeCycleHandler : ILifeCyleHandler
+    public class LifeCycleHandler : ILifeCycleHandler
     {
         private readonly IExicoHfDbService _dbService;
-        private readonly ILogger<ILifeCyleHandler> _logger;
+        private readonly ILogger<ILifeCycleHandler> _logger;
 
-        public LifeCycleHandler(IExicoHfDbService dbService, ILogger<ILifeCyleHandler> logger)
+        public LifeCycleHandler(IExicoHfDbService dbService, ILogger<ILifeCycleHandler> logger)
         {
             this._dbService = dbService;
             this._logger = logger;

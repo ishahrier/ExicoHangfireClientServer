@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Exico.HF.DbAccess.Managers.Interfaces;
 
 namespace Exico.HF.DbAccess.Managers
 {

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 
 
-namespace Exico.HF.DbAccess.Managers
+namespace Exico.HF.DbAccess.Managers.Interfaces
 {
     public interface IManageJob
     {

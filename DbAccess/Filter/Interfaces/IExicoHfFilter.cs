@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Exico.HF.DbAccess.Filter
+namespace Exico.HF.DbAccess.Filter.Interfaces
 {
     public interface IExicoHfFilter :
        IClientFilter,
