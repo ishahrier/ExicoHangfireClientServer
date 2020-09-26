@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF6A6A24-1A95-44D7-8DCB-68628B99E8AA}"
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.yml = docker-compose.yml
+		readme.txt = readme.txt
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HFServer", "HFServer\HFServer.csproj", "{355A0FA4-0BBC-45EB-802E-45950C9682AD}"
@@ -15,11 +16,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{06052910-598F-4F31-83CD-C07C2670F627}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbAccess", "DbAccess\DbAccess.csproj", "{0BAFD12B-324D-400D-AC2C-4E348047CC4E}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{8360735F-BD62-49BA-A394-3C627C6A0702}"
-	ProjectSection(SolutionItems) = preProject
-		readme.txt = readme.txt
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
