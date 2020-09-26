@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\DbAccess\DbAccess.csproj" />
+    <ProjectReference Include="..\ExampleThirdPartyWorker\ExampleThirdPartyWorker.csproj" />
   </ItemGroup>
 
 </Project>

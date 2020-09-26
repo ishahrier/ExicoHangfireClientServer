@@ -1,3 +1,4 @@
+using ExampleThirdPartyWorker;
 using Exico.HF.DbAccess.Extentions;
 using Hangfire;
 using Hangfire.SqlServer;
@@ -48,6 +49,8 @@ namespace HFServer
 
             services.AddControllersWithViews().AddNewtonsoftJson();
             services.AddRazorPages();
+
+            services.AddScoped<IDownloadFromGql, GqlDownLoader>();
         }
         
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

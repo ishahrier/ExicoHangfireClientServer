@@ -57,7 +57,7 @@ namespace HFServer.Controllers
             return View();
         }
 
-        public async Task<IActionResult> CreateFnF()
+        public async Task<IActionResult> CreateFnF2()
         {
             var options2 = new HfUserFireAndForgetJobModel()
             {
@@ -71,6 +71,23 @@ namespace HFServer.Controllers
                 WorkDataId = 10
             };
 
+            var data = await _jm.Create(options2);
+            return View("Index");
+        }
+ 
+        public async Task<IActionResult> CreateFnF()
+        {
+            var options2 = new HfUserFireAndForgetJobModel()
+            {
+                Name = "Tst Fnf",
+                Note = "Test Note",
+                UserId = "1111",
+                WorkerClassName = "ExampleThirdPartyWorker.IDownloadFromGql",
+                WorkerAssemblyName = "ExampleThirdPartyWorker",
+                TimeZoneId = "Central Standard Time",
+                Status = Exico.HF.Common.Enums.JobStatus.None,
+                WorkDataId = 10
+            };
             var data = await _jm.Create(options2);
             return View("Index");
         }
