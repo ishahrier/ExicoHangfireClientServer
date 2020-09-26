@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Exico.HF.Common.DomainModels
@@ -14,6 +15,7 @@ namespace Exico.HF.Common.DomainModels
         public string LastHfJobId { get; set; }
         public DateTimeOffset? LastRun { get; set; }
         public DateTimeOffset? NextRun { get; set; }
+        [Required]
         public string CronExpression { get; set; }
     }
 }

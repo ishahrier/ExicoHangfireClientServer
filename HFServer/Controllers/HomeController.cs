@@ -23,9 +23,9 @@ namespace HFServer.Controllers
         private readonly IServiceProvider proider;
 
         public IServiceProvider Di { get; }
-       // public IManageWork<HfUserRecurringJobModel> Model { get; }
+        // public IManageWork<HfUserRecurringJobModel> Model { get; }
 
-        public HomeController(IManageJob jm, ILogger<HomeController> logger, IExicoHfDbService service, IServiceProvider proider )
+        public HomeController(IManageJob jm, ILogger<HomeController> logger, IExicoHfDbService service, IServiceProvider proider)
         {
             _jm = jm;
             this._logger = logger;
@@ -34,7 +34,7 @@ namespace HFServer.Controllers
         }
         public IActionResult Index()
         {
- 
+
             //var rec = new HfUserRecurringJobModel()
             //{
             //    Name = "Tst recurring",
@@ -63,7 +63,7 @@ namespace HFServer.Controllers
                 Name = "Tst Fnf",
                 Note = "Test Note",
                 UserId = "1111",
-                WorkerClassName = "Exico.HF.Common.Interfaces.DownloadAllProducts",   
+                WorkerClassName = "Exico.HF.Common.Interfaces.DownloadAllProducts",
                 WorkerAssemblyName = "Exico.HF.Common",
                 TimeZoneId = "Central Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
@@ -96,7 +96,7 @@ namespace HFServer.Controllers
 
         public async Task<ActionResult> CreateRecurring()
         {
-            var options2 = new  HfUserRecurringJobModel()
+            var options2 = new HfUserRecurringJobModel()
             {
                 Name = "Tst recurring",
                 Note = "Test Note",
@@ -107,7 +107,7 @@ namespace HFServer.Controllers
                 Status = Exico.HF.Common.Enums.JobStatus.None,
                 WorkDataId = 12,
                 CronExpression = Cron.MinuteInterval(1)
-                
+
             };
 
             var data = await _jm.Create(options2);
