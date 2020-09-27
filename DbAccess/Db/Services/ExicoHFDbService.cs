@@ -246,7 +246,7 @@ namespace Exico.HF.DbAccess.Db.Services
         }
 
 
-        public async Task<bool> UpdateStatusBgJobId(int userJobId, JobStatus status, string hfJobId)
+        public async Task<bool> UpdateStatusAndBgJobId(int userJobId, JobStatus status, string hfJobId)
         {
             var data = await Get(userJobId, true);
             await using var db = _ctxGenerator.GenerateNewContext();

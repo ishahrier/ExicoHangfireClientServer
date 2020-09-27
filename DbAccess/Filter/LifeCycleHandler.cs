@@ -50,7 +50,7 @@ namespace Exico.HF.DbAccess.Filter
                 var state = context.CandidateState;
                 var args = GetWorkArguments(context.BackgroundJob.Job);
                 if (state.Name == FailedState.StateName)
-                    return await _dbService.UpdateStatusBgJobId(args.UserJobId, JobStatus.Failed, context.BackgroundJob?.Id);
+                    return await _dbService.UpdateStatusAndBgJobId(args.UserJobId, JobStatus.Failed, context.BackgroundJob?.Id);
                 else
                 {
                     if (context.BackgroundJob != null)
@@ -67,7 +67,7 @@ namespace Exico.HF.DbAccess.Filter
                         else if (state.Name == DeletedState.StateName)
                             status = JobStatus.Cancelled;
 
-                        return await _dbService.UpdateStatusBgJobId(args.UserJobId, status, context.BackgroundJob.Id);
+                        return await _dbService.UpdateStatusAndBgJobId(args.UserJobId, status, context.BackgroundJob.Id);
                     }
                 }
                 return false;

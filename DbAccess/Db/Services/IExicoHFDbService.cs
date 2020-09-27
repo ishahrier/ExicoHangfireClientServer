@@ -11,7 +11,7 @@ namespace Exico.HF.DbAccess.Db.Services
         /// This method sets the HF recurring job definition guid. The initial id of a recurring job.
         /// When recurring user job is created, an Id is created for parent HF job definition.
         /// It is unlike the bgjobId , bgJobId is created for each time the recurring task is en-queued
-        /// as a back ground job. And it is updated along with static using <seealso cref="UpdateStatusBgJobId(int, JobStatus, string)"/>
+        /// as a back ground job. And it is updated along with static using <seealso cref="UpdateStatusAndBgJobId"/>
         /// from within the <seealso cref="Exico.HF.DbAccess.Filter.DefaultExicoHfFilter"/>
         /// </summary>
         /// <param name="userJobId"></param>
@@ -38,7 +38,7 @@ namespace Exico.HF.DbAccess.Db.Services
         /// <param name="status"></param>
         /// <param name="hfJobId"></param>
         /// <returns>tru if succeeded, false otherwise</returns>
-        Task<bool> UpdateStatusBgJobId(int userJobId, JobStatus status, string hfJobId);
+        Task<bool> UpdateStatusAndBgJobId(int userJobId, JobStatus status, string hfJobId);
 
         Task<bool> Delete(int userJobId);
         /// <summary>
