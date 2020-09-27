@@ -110,8 +110,7 @@ namespace Exico.HF.DbAccess.Db.Services
         private async Task<HfUserFireAndForgetJobModel> GetFnf(int userJobId)
         {
             var record = await Get(userJobId);
-            if (record != null) return (HfUserFireAndForgetJobModel)record.ToDomainModel();
-            else return null;
+            return (HfUserFireAndForgetJobModel) record?.ToDomainModel();
         }
 
         private async Task<HfUserScheduledJobModel> GetScheduled(int userJobId)
@@ -122,8 +121,7 @@ namespace Exico.HF.DbAccess.Db.Services
                 .AsNoTracking()
                 .Include(x => x.HfUserJob)
                 .FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
-                if (record != null) return record.ToDomainModel();
-                else return null;
+                return record?.ToDomainModel();
             }
         }
 
@@ -135,8 +133,7 @@ namespace Exico.HF.DbAccess.Db.Services
                 .AsNoTracking()
                 .Include(x => x.HfUserJob)
                 .FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
-                if (record != null) return record.ToDomainModel();
-                else return null;
+                return record?.ToDomainModel();
             }
         }
 
@@ -144,30 +141,20 @@ namespace Exico.HF.DbAccess.Db.Services
         {
             var data = (await Get(userJobId));
             if (data.IsFireAndForgetJob())
-            {
                 return data.ToDomainModel();
-            }
             else if (data.IsScheduledJob())
-            {
-                var _data = await Get<HfUserScheduledJobModel>(userJobId);
-                return _data;
-            }
+                return await Get<HfUserScheduledJobModel>(userJobId);
             else if (data.IsRecurringJob())
-            {
-                var _data = await Get<HfUserRecurringJobModel>(userJobId);
-                return _data;
-            }
+                return await Get<HfUserRecurringJobModel>(userJobId);
 
             throw new Exception("Cannot get base data, invalid job type detected.");
         }
 
         private async Task<HfUserJob> Get(int userJobId, bool tracking = false)
         {
-            using (var db = _ctxGenerator.GenerateNewContext())
-            {
-                var query = tracking ? db.HfUserJob : db.HfUserJob.AsNoTracking();
-                return await query.FirstOrDefaultAsync(x => x.Id == userJobId);
-            }
+            await using var db = _ctxGenerator.GenerateNewContext();
+            var query = tracking ? db.HfUserJob : db.HfUserJob.AsNoTracking();
+            return await query.FirstOrDefaultAsync(x => x.Id == userJobId);
         }
 
         #endregion
@@ -198,110 +185,97 @@ namespace Exico.HF.DbAccess.Db.Services
 
         public async Task<bool> SetRecurringJobInitialHfId(int userJobId, Guid id)
         {
-            using (var db = _ctxGenerator.GenerateNewContext())
-            {
-                var toBeUpdated = await Get(userJobId, true);
-                toBeUpdated.HfJobId = id.ToString();
-                toBeUpdated.UpdatedOn = DateTimeOffset.UtcNow;
-                db.Update(toBeUpdated);
-                return await db.SaveChangesAsync() > 0;
-            }
+            await using var db = _ctxGenerator.GenerateNewContext();
+            var toBeUpdated = await Get(userJobId, true);
+            toBeUpdated.HfJobId = id.ToString();
+            toBeUpdated.UpdatedOn = DateTimeOffset.UtcNow;
+            db.Update(toBeUpdated);
+            return await db.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> SetRecurringLastRunJobId(int userJobId, string lastRunJobId)
         {
-            using (var db = _ctxGenerator.GenerateNewContext())
-            {
-                var toBeUpdated = await db.HfUserRecurringJob.Include(x => x.HfUserJob).FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
-                toBeUpdated.LastHfJobId = lastRunJobId;
-                db.Update(toBeUpdated);
-                return await db.SaveChangesAsync() > 0;
-            }
+            await using var db = _ctxGenerator.GenerateNewContext();
+            var toBeUpdated = await db.HfUserRecurringJob.Include(x => x.HfUserJob).FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
+            toBeUpdated.LastHfJobId = lastRunJobId;
+            db.Update(toBeUpdated);
+            return await db.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> UpdateRecurringNextRun(int userJobId, DateTime nextRun)
         {
-            using (var db = _ctxGenerator.GenerateNewContext())
-            {
-                var toBeUpdated = await db.HfUserRecurringJob.Include(x => x.HfUserJob).FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
-                toBeUpdated.NextRun = nextRun;
-                db.Update(toBeUpdated);
-                return await db.SaveChangesAsync() > 0;
-            }
+            await using var db = _ctxGenerator.GenerateNewContext();
+            var toBeUpdated = await db.HfUserRecurringJob.Include(x => x.HfUserJob).FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
+            toBeUpdated.NextRun = nextRun;
+            db.Update(toBeUpdated);
+            return await db.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> Delete(int userJobId)
         {
             var job = await Get(userJobId, true);
 
-            using (var db = _ctxGenerator.GenerateNewContext())
+            await using var db = _ctxGenerator.GenerateNewContext();
+            if (job != null)
             {
-                if (job != null)
+                if (job.IsFireAndForgetJob())
                 {
-                    if (job.IsFireAndForgetJob())
-                    {
-                        db.HfUserJob.Remove(job);
-                    }
-                    if (job.IsScheduledJob())
-                    {
-                        var scheduled = await db.HfUserScheduledJob.FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
-                        db.HfUserScheduledJob.Remove(scheduled);
-                    }
-                    if (job.IsRecurringJob())
-                    {
-                        var rec = await db.HfUserRecurringJob.FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
-                        db.HfUserRecurringJob.Remove(rec);
-                    }
-
-                    return await db.SaveChangesAsync() > 0;
+                    db.HfUserJob.Remove(job);
+                }
+                if (job.IsScheduledJob())
+                {
+                    var scheduled = await db.HfUserScheduledJob.FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
+                    db.HfUserScheduledJob.Remove(scheduled);
+                }
+                if (job.IsRecurringJob())
+                {
+                    var rec = await db.HfUserRecurringJob.FirstOrDefaultAsync(x => x.HfUserJobId == userJobId);
+                    db.HfUserRecurringJob.Remove(rec);
                 }
 
-                return false;
+                return await db.SaveChangesAsync() > 0;
             }
+
+            return false;
         }
 
         public async Task<Guid> GetRecurringInitialHfJobId(int userJobId)
         {
             var job = await Get(userJobId, false);
-            if (job != null) return Guid.Parse(job.HfJobId);
-            return Guid.Empty;
+            return job != null ? Guid.Parse(job.HfJobId) : Guid.Empty;
         }
 
 
         public async Task<bool> UpdateStatusBgJobId(int userJobId, JobStatus status, string hfJobId)
         {
             var data = await Get(userJobId, true);
-            using (var db = _ctxGenerator.GenerateNewContext())
+            await using var db = _ctxGenerator.GenerateNewContext();
+            if (data.IsFireAndForgetOrScheduled())
             {
-                if (data.IsFireAndForgetOrScheduled())
-                {
-                    db.HfUserJob.Attach(data);
-                    data.Status = status;
-                    data.HfJobId = hfJobId;
-                    data.UpdatedOn = DateTimeOffset.Now;
-                    return await db.SaveChangesAsync() > 0;
-                }
-                if (data.IsRecurringJob())
-                {
-                    var recData = db.HfUserRecurringJob.Include(x => x.HfUserJob).Where(x => x.HfUserJobId == userJobId).FirstOrDefault();
-                    recData.HfUserJob.Status = status;
-                    recData.LastHfJobId = hfJobId;
-                    return await db.SaveChangesAsync() > 0;
-
-                }
-                return false;
+                db.HfUserJob.Attach(data);
+                data.Status = status;
+                data.HfJobId = hfJobId;
+                data.UpdatedOn = DateTimeOffset.Now;
+                return await db.SaveChangesAsync() > 0;
             }
+            if (data.IsRecurringJob())
+            {
+                var recData = db.HfUserRecurringJob.Include(x => x.HfUserJob).Where(x => x.HfUserJobId == userJobId).FirstOrDefault();
+                recData.HfUserJob.Status = status;
+                recData.LastHfJobId = hfJobId;
+                return await db.SaveChangesAsync() > 0;
+
+            }
+            return false;
         }
 
         public async Task<string> GetHfBackgroundJobId(int userJobId)
         {
             var data = await GetBaseData(userJobId);
-            string ret = string.Empty;
-            if (data != null)
-            {
-                if (data.IsFireAndForgetOrScheduled()) ret = data.HfJobId;
-                else if (data.IsRecurringJob()) ret = (data as HfUserRecurringJobModel).LastHfJobId;
-            }
+            var ret = string.Empty;
+            if (data == null) return ret;
+            if (data.IsFireAndForgetOrScheduled()) ret = data.HfJobId;
+            else if (data.IsRecurringJob()) ret = (data as HfUserRecurringJobModel).LastHfJobId;
             return ret;
         }
 
