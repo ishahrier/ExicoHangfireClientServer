@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using Exico.HF.Common.Worker.Test;
 
 namespace HFServer
 {
@@ -50,7 +51,7 @@ namespace HFServer
             services.AddControllersWithViews().AddNewtonsoftJson();
             services.AddRazorPages();
 
-            services.AddScoped<IDownloadFromGql, GqlDownLoader>();
+            services.AddScoped<ITestDownloadWorker, TestDownloadWorker>();
         }
         
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

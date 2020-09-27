@@ -1,26 +1,28 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Exico.HF.Common.DomainModels;
-using Exico.HF.Common.Interfaces;
+using Exico.HF.Common.Worker;
 using Hangfire;
+using Microsoft.Extensions.Logging;
 
 namespace ExampleThirdPartyWorker
 {
 
-    public interface IDownloadFromGql : IWorker
+    public interface IDownloadFromGql 
     {
 
     }
-    public class GqlDownLoader:IDownloadFromGql
+    public class GqlDownLoader:ABaseWorker,IDownloadFromGql
     {
-        public GqlDownLoader()
-        {
-            
-        }
-        public Task<bool> DoWorkAsync(WorkArguments args, IJobCancellationToken token)
+
+        public override  async Task<bool> DoWorkAsync(WorkArguments args, IJobCancellationToken token)
         {
             Console.WriteLine("GqlDownLoader finished Working");
-            return Task.FromResult<bool>(true);
+            return await Task.FromResult<bool>(true);
+        }
+
+        public GqlDownLoader(ILogger<GqlDownLoader> logger) : base(logger)
+        {
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿using Exico.HF.Common.DomainModels;
-using Exico.HF.Common.Interfaces;
 using Exico.HF.DbAccess.Managers.Interfaces;
 using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using Exico.HF.Common.Worker;
 
 namespace Exico.HF.DbAccess.Managers
 {

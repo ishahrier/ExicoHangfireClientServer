@@ -1,5 +1,4 @@
 ﻿using Exico.HF.Common.DomainModels;
-using Exico.HF.Common.Interfaces;
 using Exico.HF.DbAccess.Db.Services;
 using Exico.HF.DbAccess.Managers;
 using Hangfire;
@@ -64,7 +63,7 @@ namespace HFServer.Controllers
                 Name = "Tst Fnf",
                 Note = "Test Note",
                 UserId = "1111",
-                WorkerClassName = "Exico.HF.Common.Interfaces.DownloadAllProducts",
+                WorkerClassName = "Exico.HF.Common.Worker.Test.ITestDownloadWorker",
                 WorkerAssemblyName = "Exico.HF.Common",
                 TimeZoneId = "Central Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
@@ -99,7 +98,7 @@ namespace HFServer.Controllers
                 Name = "Tst schedule",
                 Note = "Test Note",
                 UserId = "1111",
-                WorkerClassName = "Exico.HF.Common.Interfaces.DownloadAllProducts",
+                WorkerClassName = "Exico.HF.Common.Worker.Test.ITestDownloadWorker",
                 WorkerAssemblyName = "Exico.HF.Common",
                 TimeZoneId = "Eastern Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
@@ -119,7 +118,7 @@ namespace HFServer.Controllers
                 Name = "Tst recurring",
                 Note = "Test Note",
                 UserId = "1111",
-                WorkerClassName = "Exico.HF.Common.Interfaces.DownloadAllProducts",
+                WorkerClassName = "Exico.HF.Common.Worker.Test.ITestDownloadWorker",
                 WorkerAssemblyName = "Exico.HF.Common",
                 TimeZoneId = "Eastern Standard Time",
                 Status = Exico.HF.Common.Enums.JobStatus.None,
