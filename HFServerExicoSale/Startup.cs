@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using Exico.HF.Common.Worker.Test;
 
-namespace HFServer
+namespace HFServerExicoSale
 {
     public class Startup
     {
@@ -27,7 +27,7 @@ namespace HFServer
             services.AddHangfire(configuration => configuration
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_110)
                 .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings()                
+                .UseRecommendedSerializerSettings()
                 .UseSqlServerStorage(Configuration.GetConnectionString("HangfireConnection"), new SqlServerStorageOptions
                 {
                     CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
@@ -36,10 +36,10 @@ namespace HFServer
                     UseRecommendedIsolationLevel = true,
                     UsePageLocksOnDequeue = true,
                     DisableGlobalLocks = true,
-                    
+
                 }));
             services.AddHangfireServer(); // this will enable job processing
-            
+
             services.AddExicoHfExtension(Configuration.GetConnectionString("HangfireConnection"));
 
             services.Configure<CookiePolicyOptions>(options =>
@@ -52,7 +52,7 @@ namespace HFServer
 
             services.AddScoped<ITestDownloadWorker, TestDownloadWorker>();
         }
-        
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
