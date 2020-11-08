@@ -1,6 +1,6 @@
 using System;
 
-namespace HFServer.Models
+namespace Exico.HF.Common.DomainModels
 {
     public class ErrorViewModel
     {
