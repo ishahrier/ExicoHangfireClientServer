@@ -79,23 +79,5 @@ namespace HFServer
             });
         }
     }
-
-    public interface ITest
-    {
-        void Print();
-    }
-    public class MyClass : ITest
-    {
-        private ILogger<MyClass> logger;
-
-        public MyClass(ILogger<MyClass> logger)
-        {
-            this.logger = logger;
-        }
-
-        public void Print()
-        {
-            Console.WriteLine("My Class");
-        }
-    }
+ 
 }
